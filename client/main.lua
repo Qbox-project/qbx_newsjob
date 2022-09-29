@@ -48,8 +48,7 @@ end)
 
 function TakeOutVehicle(vehicleInfo)
     local coords = Config.Locations["vehicle"].coords
-    QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-        local veh = NetToVeh(netId)
+    QBCore.Functions.SpawnVehicle(vehicleInfo, function(veh)
         SetVehicleNumberPlateText(veh, "WZNW"..tostring(math.random(1000, 9999)))
         SetEntityHeading(veh, coords.w)
         exports['LegacyFuel']:SetFuel(veh, 100.0)
@@ -58,7 +57,7 @@ function TakeOutVehicle(vehicleInfo)
         SetVehicleEngineOn(veh, true, true)
         SetVehicleLivery(veh, 2)
         CurrentPlate = QBCore.Functions.GetPlate(veh)
-    end, vehicleInfo, coords, true)
+    end, coords, true)
 end
 
 function MenuGarage()
@@ -95,8 +94,7 @@ end
 
 function TakeOutHelicopters(vehicleInfo)
     local coords = Config.Locations["heli"].coords
-    QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-        local veh = NetToVeh(netId)
+    QBCore.Functions.SpawnVehicle(vehicleInfo, function(veh)
         SetVehicleNumberPlateText(veh, "WZNW"..tostring(math.random(1000, 9999)))
         SetEntityHeading(veh, coords.w)
         exports['LegacyFuel']:SetFuel(veh, 100.0)
@@ -105,7 +103,7 @@ function TakeOutHelicopters(vehicleInfo)
         SetVehicleEngineOn(veh, true, true)
         SetVehicleLivery(veh, 2)
         CurrentPlate = QBCore.Functions.GetPlate(veh)
-    end, vehicleInfo, coords, true)
+    end, coords, true)
 end
 
 function MenuHeliGarage()
