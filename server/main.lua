@@ -1,4 +1,4 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local QBCore = exports['qbx-core']:GetCoreObject()
 
 QBCore.Commands.Add("newscam", "Grab a news camera", {}, false, function(source, _)
     local Player = QBCore.Functions.GetPlayer(source)
