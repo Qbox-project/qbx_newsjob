@@ -148,7 +148,7 @@ CreateThread(function()
                                 coords = vec3(Config.Locations["vehicle"].coords.x, Config.Locations["vehicle"].coords.y, Config.Locations["vehicle"].coords.z),
                                 size = vec3(4, 4, 4),
                                 rotation = 45,
-                                debug = true,
+                                debug = false,
                                 inside = inside,
                                 onEnter = onEnter,
                                 onExit = onExit
@@ -192,7 +192,7 @@ CreateThread(function()
                                 coords = vec3(Config.Locations["heli"].coords.x, Config.Locations["heli"].coords.y, Config.Locations["heli"].coords.z),
                                 size = vec3(4, 4, 4),
                                 rotation = 267.49,
-                                debug = true,
+                                debug = false,
                                 inside = inside,
                                 onEnter = onEnter,
                                 onExit = onExit
@@ -262,7 +262,7 @@ CreateThread(function()
                             coords = vec3(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z),
                             size = vec3(4, 4, 4),
                             rotation = 267.49,
-                            debug = true,
+                            debug = false,
                             inside = inside,
                             onEnter = onEnter,
                             onExit = onExit
@@ -300,7 +300,7 @@ CreateThread(function()
                             coords = vec3(Config.Locations["inside"].coords.x, Config.Locations["inside"].coords.y, Config.Locations["inside"].coords.z),
                             size = vec3(2, 2, 2),
                             rotation = 245.46,
-                            debug = true,
+                            debug = false,
                             inside = inside,
                             onEnter = onEnter,
                             onExit = onExit
