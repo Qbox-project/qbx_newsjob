@@ -1,5 +1,7 @@
 Config = {}
 
+Config.DebugZones = false -- Enable debug for zones
+
 Config.Locations = {
     ["main"] = {
         label = "Weazle News HQ",
