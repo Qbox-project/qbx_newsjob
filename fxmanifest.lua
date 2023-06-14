@@ -9,11 +9,12 @@ shared_scripts {
     '@qb-core/shared/locale.lua',
     'locales/en.lua',
     'locales/*.lua',
+    '@ox_lib/init.lua'
 }
 
 client_scripts {
     'client/main.lua',
-    'client/camera.lua',
+    'client/camera.lua'
 }
 
 server_script 'server/main.lua'
