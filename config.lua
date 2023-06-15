@@ -1,5 +1,7 @@
 Config = {}
 
+Config.DebugZones = false -- Enable debug for zones
+
 Config.Locations = {
     ["main"] = {
         label = "Weazle News HQ",
@@ -31,7 +33,6 @@ Config.Vehicles = {
 	-- Grade 1
 	[1] = {
 		["rumpo"] = "Rumpo",
-
 	},
 	-- Grade 2
 	[2] = {
@@ -55,7 +56,6 @@ Config.Helicopters = {
 	-- Grade 1
 	[1] = {
 		["frogger"] = "Frogger",
-
 	},
 	-- Grade 2
 	[2] = {
