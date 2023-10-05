@@ -12,7 +12,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     end
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function()
     if QBX.PlayerData.job.name == "reporter" then
         local blip = AddBlipForCoord(Config.Locations.main.coords.x, Config.Locations.main.coords.y, Config.Locations.main.coords.z)
         SetBlipSprite(blip, 225)
@@ -98,14 +98,13 @@ CreateThread(function()
         Wait(0)
         if LocalPlayer.state.isLoggedIn then
             local inRange = false
-            local boxZone = false
             local pos = GetEntityCoords(cache.ped)
             if QBX.PlayerData.job.name == "reporter" then
                 if #(pos - vector3(Config.Locations.vehicle.coords.x, Config.Locations.vehicle.coords.y, Config.Locations.vehicle.coords.z)) < 10.0 then
                     inRange = true
                     DrawMarker(2, Config.Locations.vehicle.coords.x, Config.Locations.vehicle.coords.y, Config.Locations.vehicle.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(Config.Locations.vehicle.coords.x, Config.Locations.vehicle.coords.y, Config.Locations.vehicle.coords.z)) < 1.5 then
-                        if not VehicleZone then 
+                        if not VehicleZone then
                             VehicleZone = lib.zones.box({
                                 coords = vec3(Config.Locations.vehicle.coords.x, Config.Locations.vehicle.coords.y, Config.Locations.vehicle.coords.z),
                                 size = vec3(4, 4, 4),
