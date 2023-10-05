@@ -61,8 +61,7 @@ local function CheckInputRotation(cam, zoomvalue)
 end
 
 local function HandleZoom(cam)
-	local lPed = PlayerPedId()
-	if not ( IsPedSittingInAnyVehicle( lPed ) ) then
+	if not ( IsPedSittingInAnyVehicle(cache.ped) ) then
 
 		if IsControlJustPressed(0,241) then
 			fov = math.max(fov - zoomspeed, fov_min)
@@ -119,26 +118,23 @@ end
 
 RegisterNetEvent("Cam:ToggleCam", function()
     if not holdingCam then
-        RequestModel(GetHashKey(camModel))
-        while not HasModelLoaded(GetHashKey(camModel)) do
-            Wait(100)
-        end
+        lib.requestModel(camModel)
 
-        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(PlayerId()), 0.0, 0.0, -5.0)
-        local camspawned = CreateObject(GetHashKey(camModel), plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
+        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(cache.playerId), 0.0, 0.0, -5.0)
+        local camspawned = CreateObject(camModel, plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
         Wait(1000)
         local netid = ObjToNet(camspawned)
         SetNetworkIdExistsOnAllMachines(netid, true)
         NetworkSetNetworkIdDynamic(netid, true)
         SetNetworkIdCanMigrate(netid, false)
-        AttachEntityToEntity(camspawned, GetPlayerPed(PlayerId()), GetPedBoneIndex(GetPlayerPed(PlayerId()), 28422), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
-        TaskPlayAnim(GetPlayerPed(PlayerId()), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
-        TaskPlayAnim(GetPlayerPed(PlayerId()), camanimDict, camanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
+        AttachEntityToEntity(camspawned, GetPlayerPed(cache.playerId), GetPedBoneIndex(GetPlayerPed(cache.playerId), 28422), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
+        TaskPlayAnim(GetPlayerPed(cache.playerId), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
+        TaskPlayAnim(GetPlayerPed(cache.playerId), camanimDict, camanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
         cam_net = netid
         holdingCam = true
 		DisplayNotification(Lang:t("text.weazle_overlay"))
     else
-        ClearPedSecondaryTask(GetPlayerPed(PlayerId()))
+        ClearPedSecondaryTask(GetPlayerPed(cache.playerId))
         DetachEntity(NetToObj(cam_net), 1, 1)
         DeleteEntity(NetToObj(cam_net))
         cam_net = nil
@@ -148,23 +144,20 @@ end)
 
 CreateThread(function()
 	while true do
-		if PlayerJob.name == "reporter" then
+		if QBX.PlayerData.job.name == "reporter" then
 			if holdingCam then
-				while not HasAnimDictLoaded(camanimDict) do
-					RequestAnimDict(camanimDict)
-					Wait(100)
+				lib.requestAnimDict(camanimDict)
+
+				if not IsEntityPlayingAnim(cache.ped, camanimDict, camanimName, 3) then
+					TaskPlayAnim(GetPlayerPed(cache.playerId), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
+					TaskPlayAnim(GetPlayerPed(cache.playerId), camanimDict, camanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
 				end
 
-				if not IsEntityPlayingAnim(PlayerPedId(), camanimDict, camanimName, 3) then
-					TaskPlayAnim(GetPlayerPed(PlayerId()), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
-					TaskPlayAnim(GetPlayerPed(PlayerId()), camanimDict, camanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
-				end
-
-				DisablePlayerFiring(PlayerId(), true)
+				DisablePlayerFiring(cache.playerId, true)
 				DisableControlAction(0,25,true) -- disable aim
 				DisableControlAction(0, 44,  true) -- INPUT_COVER
 				DisableControlAction(0,37,true) -- INPUT_SELECT_WEAPON
-				SetCurrentPedWeapon(PlayerPedId(), GetHashKey("WEAPON_UNARMED"), true)
+				SetCurrentPedWeapon(cache.ped, joaat("WEAPON_UNARMED"), true)
 				Wait(7)
 			else
 				Wait(100)
@@ -181,35 +174,34 @@ end)
 
 CreateThread(function()
 	while true do
-		if PlayerJob.name == "reporter" then
+		if QBX.PlayerData.job.name == "reporter" then
 			if holdingCam then
 				if IsControlJustReleased(1, 244) then
 					movcamera = true
 					SetTimecycleModifier("default")
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = RequestScaleformMovie("security_camera")
+					local scaleform = lib.requestScaleformMovie("security_camera")
 					while not HasScaleformMovieLoaded(scaleform) do
 						Wait(10)
 					end
 
-					local lPed = PlayerPedId()
-					local vehicle = GetVehiclePedIsIn(lPed)
+					local vehicle = GetVehiclePedIsIn(cache.ped)
 					local cam1 = CreateCam("DEFAULT_SCRIPTED_FLY_CAMERA", true)
 
-					AttachCamToEntity(cam1, lPed, 0.0,0.0,1.0, true)
-					SetCamRot(cam1, 2.0,1.0,GetEntityHeading(lPed))
+					AttachCamToEntity(cam1, cache.ped, 0.0,0.0,1.0, true)
+					SetCamRot(cam1, 2.0,1.0,GetEntityHeading(cache.ped))
 					SetCamFov(cam1, fov)
 					RenderScriptCams(true, false, 0, 1, 0)
 					PushScaleformMovieFunction(scaleform, "security_camera")
 					PopScaleformMovieFunctionVoid()
 
-					while movcamera and not IsEntityDead(lPed) and (GetVehiclePedIsIn(lPed) == vehicle) and true do
+					while movcamera and not IsEntityDead(cache.ped) and (GetVehiclePedIsIn(cache.ped) == vehicle) and true do
 						if IsControlJustPressed(0, 177) then
 							PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", false)
 							movcamera = false
 						end
 
-						SetEntityRotation(lPed, 0, 0, new_z,2, true)
+						SetEntityRotation(cache.ped, 0, 0, new_z,2, true)
 						local zoomvalue = (1.0/(fov_max-fov_min))*(fov-fov_min)
 						CheckInputRotation(cam1, zoomvalue)
 						HandleZoom(cam1)
@@ -231,8 +223,8 @@ CreateThread(function()
 							camHeading = 180.0
 						end
 						camHeading = (camHeading + 180.0) / 360.0
-						SetTaskMoveNetworkSignalFloat(PlayerPedId(), "Pitch", camPitch)
-						SetTaskMoveNetworkSignalFloat(PlayerPedId(), "Heading", camHeading * -1.0 + 1.0)
+						SetTaskMoveNetworkSignalFloat(cache.ped, "Pitch", camPitch)
+						SetTaskMoveNetworkSignalFloat(cache.ped, "Heading", camHeading * -1.0 + 1.0)
 						Wait(1)
 					end
 					movcamera = false
@@ -260,36 +252,30 @@ end)
 
 CreateThread(function()
 	while true do
-		if PlayerJob.name == "reporter" then
+		if QBX.PlayerData.job.name == "reporter" then
 			if holdingCam then
 				if IsControlJustReleased(1, 38) then
 					newscamera = true
 					SetTimecycleModifier("default")
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = RequestScaleformMovie("security_camera")
-					local scaleform2 = RequestScaleformMovie("breaking_news")
-					while not HasScaleformMovieLoaded(scaleform) do
-						Wait(10)
-					end
-					while not HasScaleformMovieLoaded(scaleform2) do
-						Wait(10)
-					end
-					local lPed = PlayerPedId()
-					local vehicle = GetVehiclePedIsIn(lPed)
+					local scaleform = lib.requestScaleformMovie("security_camera")
+					local scaleform2 = lib.requestScaleformMovie("breaking_news")
+
+					local vehicle = GetVehiclePedIsIn(cache.ped)
 					local cam2 = CreateCam("DEFAULT_SCRIPTED_FLY_CAMERA", true)
-					AttachCamToEntity(cam2, lPed, 0.0,0.0,1.0, true)
-					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(lPed))
+					AttachCamToEntity(cam2, cache.ped, 0.0,0.0,1.0, true)
+					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(cache.ped))
 					SetCamFov(cam2, fov)
 					RenderScriptCams(true, false, 0, 1, 0)
 					PushScaleformMovieFunction(scaleform, "SET_CAM_LOGO")
 					PushScaleformMovieFunction(scaleform2, "breaking_news")
 					PopScaleformMovieFunctionVoid()
-					while newscamera and not IsEntityDead(lPed) and (GetVehiclePedIsIn(lPed) == vehicle) and true do
+					while newscamera and not IsEntityDead(cache.ped) and (GetVehiclePedIsIn(cache.ped) == vehicle) and true do
 						if IsControlJustPressed(1, 177) then
 							PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", false)
 							newscamera = false
 						end
-						SetEntityRotation(lPed, 0, 0, new_z,2, true)
+						SetEntityRotation(cache.ped, 0, 0, new_z,2, true)
 						local zoomvalue = (1.0/(fov_max-fov_min))*(fov-fov_min)
 						CheckInputRotation(cam2, zoomvalue)
 						HandleZoom(cam2)
@@ -311,8 +297,8 @@ CreateThread(function()
 							camHeading = 180.0
 						end
 						camHeading = (camHeading + 180.0) / 360.0
-						SetTaskMoveNetworkSignalFloat(PlayerPedId(), "Pitch", camPitch)
-						SetTaskMoveNetworkSignalFloat(PlayerPedId(), "Heading", camHeading * -1.0 + 1.0)
+						SetTaskMoveNetworkSignalFloat(cache.ped, "Pitch", camPitch)
+						SetTaskMoveNetworkSignalFloat(cache.ped, "Heading", camHeading * -1.0 + 1.0)
 						Wait(1)
 					end
 					newscamera = false
@@ -340,24 +326,21 @@ end)
 
 RegisterNetEvent("Mic:ToggleBMic", function()
     if not holdingBmic then
-        RequestModel(GetHashKey(bmicModel))
-        while not HasModelLoaded(GetHashKey(bmicModel)) do
-            Wait(100)
-        end
-        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(PlayerId()), 0.0, 0.0, -5.0)
-        local bmicspawned = CreateObject(GetHashKey(bmicModel), plyCoords.x, plyCoords.y, plyCoords.z, true, true, false)
+        lib.requestModel(bmicModel)
+        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(cache.playerId), 0.0, 0.0, -5.0)
+        local bmicspawned = CreateObject(bmicModel, plyCoords.x, plyCoords.y, plyCoords.z, true, true, false)
         Wait(1000)
         local netid = ObjToNet(bmicspawned)
         SetNetworkIdExistsOnAllMachines(netid, true)
         NetworkSetNetworkIdDynamic(netid, true)
         SetNetworkIdCanMigrate(netid, false)
-        AttachEntityToEntity(bmicspawned, GetPlayerPed(PlayerId()), GetPedBoneIndex(GetPlayerPed(PlayerId()), 28422), -0.08, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
-        TaskPlayAnim(GetPlayerPed(PlayerId()), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
-        TaskPlayAnim(GetPlayerPed(PlayerId()), bmicanimDict, bmicanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
+        AttachEntityToEntity(bmicspawned, GetPlayerPed(cache.playerId), GetPedBoneIndex(GetPlayerPed(cache.playerId), 28422), -0.08, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
+        TaskPlayAnim(GetPlayerPed(cache.playerId), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
+        TaskPlayAnim(GetPlayerPed(cache.playerId), bmicanimDict, bmicanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
         bmic_net = netid
         holdingBmic = true
     else
-        ClearPedSecondaryTask(GetPlayerPed(PlayerId()))
+        ClearPedSecondaryTask(GetPlayerPed(cache.playerId))
         DetachEntity(NetToObj(bmic_net), 1, 1)
         DeleteEntity(NetToObj(bmic_net))
         bmic_net = nil
@@ -367,23 +350,20 @@ end)
 
 CreateThread(function()
 	while true do
-		if PlayerJob.name == "reporter" then
+		if QBX.PlayerData.job.name == "reporter" then
 			if holdingBmic then
-				while not HasAnimDictLoaded(bmicanimDict) do
-					RequestAnimDict(bmicanimDict)
-					Wait(100)
+				lib.requestAnimDict(bmicanimDict)
+				if not IsEntityPlayingAnim(cache.ped, bmicanimDict, bmicanimName, 3) then
+					TaskPlayAnim(cache.ped, 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
+					TaskPlayAnim(cache.ped, bmicanimDict, bmicanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
 				end
-				if not IsEntityPlayingAnim(PlayerPedId(), bmicanimDict, bmicanimName, 3) then
-					TaskPlayAnim(PlayerPedId(), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
-					TaskPlayAnim(PlayerPedId(), bmicanimDict, bmicanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
-				end
-				DisablePlayerFiring(PlayerId(), true)
+				DisablePlayerFiring(cache.playerId, true)
 				DisableControlAction(0,25,true) -- disable aim
 				DisableControlAction(0, 44,  true) -- INPUT_COVER
 				DisableControlAction(0,37,true) -- INPUT_SELECT_WEAPON
-				SetCurrentPedWeapon(PlayerPedId(), GetHashKey("WEAPON_UNARMED"), true)
-				if IsPedInAnyVehicle(PlayerPedId(), false) or QBCore.Functions.GetPlayerData().metadata["ishandcuffed"] or holdingMic then
-					ClearPedSecondaryTask(PlayerPedId())
+				SetCurrentPedWeapon(cache.ped, joaat("WEAPON_UNARMED"), true)
+				if IsPedInAnyVehicle(cache.ped, false) or QBX.PlayerData.metadata.ishandcuffed or holdingMic then
+					ClearPedSecondaryTask(cache.ped)
 					DetachEntity(NetToObj(bmic_net), 1, 1)
 					DeleteEntity(NetToObj(bmic_net))
 					bmic_net = nil
@@ -413,29 +393,22 @@ end)
 ---------------------------------------------------------------------------
 RegisterNetEvent("Mic:ToggleMic", function()
     if not holdingMic then
-        RequestModel(GetHashKey(micModel))
-        while not HasModelLoaded(GetHashKey(micModel)) do
-            Wait(100)
-        end
-
-		while not HasAnimDictLoaded(micanimDict) do
-			RequestAnimDict(micanimDict)
-			Wait(100)
-		end
-        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(PlayerId()), 0.0, 0.0, -5.0)
-        local micspawned = CreateObject(GetHashKey(micModel), plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
+        lib.requestModel(micModel)
+		lib.requestAnimDict(micanimDict)
+        local plyCoords = GetOffsetFromEntityInWorldCoords(GetPlayerPed(cache.playerId), 0.0, 0.0, -5.0)
+        local micspawned = CreateObject(micModel, plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
         Wait(1000)
         local netid = ObjToNet(micspawned)
         SetNetworkIdExistsOnAllMachines(netid, true)
         NetworkSetNetworkIdDynamic(netid, true)
         SetNetworkIdCanMigrate(netid, false)
-        AttachEntityToEntity(micspawned, GetPlayerPed(PlayerId()), GetPedBoneIndex(GetPlayerPed(PlayerId()), 60309), 0.055, 0.05, 0.0, 240.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
-        TaskPlayAnim(GetPlayerPed(PlayerId()), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
-        TaskPlayAnim(GetPlayerPed(PlayerId()), micanimDict, micanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
+        AttachEntityToEntity(micspawned, GetPlayerPed(cache.playerId), GetPedBoneIndex(GetPlayerPed(cache.playerId), 60309), 0.055, 0.05, 0.0, 240.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
+        TaskPlayAnim(GetPlayerPed(cache.playerId), 1.0, -1, -1, 50, 0, 0, 0, 0) -- 50 = 32 + 16 + 2
+        TaskPlayAnim(GetPlayerPed(cache.playerId), micanimDict, micanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
         mic_net = netid
         holdingMic = true
     else
-        ClearPedSecondaryTask(GetPlayerPed(PlayerId()))
+        ClearPedSecondaryTask(GetPlayerPed(cache.playerId))
         DetachEntity(NetToObj(mic_net), 1, 1)
         DeleteEntity(NetToObj(mic_net))
         mic_net = nil
