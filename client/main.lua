@@ -107,6 +107,7 @@ CreateThread(function()
             if QBX.PlayerData.job.name == 'reporter' then
                 if #(pos - vector3(config.locations.vehicleStorage.coords.xyz)) < 10.0 then
                     inRange = true
+                    ---@diagnostic disable-next-line: param-type-mismatch
                     DrawMarker(2, config.locations.vehicleStorage.coords.x, config.locations.vehicleStorage.coords.y, config.locations.vehicleStorage.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(config.locations.vehicleStorage.coords.x, config.locations.vehicleStorage.coords.y, config.locations.vehicleStorage.coords.z)) < 1.5 then
                         local function onEnter()
@@ -116,7 +117,7 @@ CreateThread(function()
                                 lib.showTextUI(Lang:t('info.vehicles'))
                             end
                         end
-                         
+
                         local function onExit()
                             lib.hideTextUI()
                         end
@@ -134,8 +135,7 @@ CreateThread(function()
                                 end
                             end
                         end
-                        
-                        if not VehicleZone then 
+                        if not VehicleZone then
                             VehicleZone = lib.zones.box({
                                 coords = vec3(config.locations.vehicleStorage.coords.xyz),
                                 size = vec3(4, 4, 4),
@@ -151,6 +151,7 @@ CreateThread(function()
                     end
                 elseif  #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 5.0 then
                     inRange = true
+                    ---@diagnostic disable-next-line: param-type-mismatch
                     DrawMarker(2, config.locations.helicopterStorage.coords.x, config.locations.helicopterStorage.coords.y, config.locations.helicopterStorage.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 1.5 then
                         local function onEnter()
@@ -160,7 +161,7 @@ CreateThread(function()
                                 lib.showTextUI(Lang:t('info.helicopters'))
                             end
                         end
-                         
+
                         local function onExit()
                             lib.hideTextUI()
                         end
@@ -178,7 +179,7 @@ CreateThread(function()
                                 end
                             end
                         end
-                        
+
                         if not HeliZone then
                             HeliZone = lib.zones.box({
                                 coords = vec3(config.locations.helicopterStorage.coords.xyz),
@@ -227,7 +228,7 @@ CreateThread(function()
                     local function onEnter()
                         lib.showTextUI(Lang:t('info.enter'))
                     end
-                     
+
                     local function onExit()
                         lib.hideTextUI()
                     end
@@ -239,16 +240,16 @@ CreateThread(function()
                             while not IsScreenFadedOut() do
                                 Wait(10)
                             end
-    
+
                             SetEntityCoords(cache.ped, config.locations.inside.coords.x, config.locations.inside.coords.y, config.locations.inside.coords.z, false, false, false, false)
                             SetEntityHeading(cache.ped, config.locations.inside.coords.w)
-    
+
                             Wait(100)
-    
+
                             DoScreenFadeIn(1000)
                         end
                     end
-                    
+
                     if not MainEntrance then
                         MainEntrance = lib.zones.box({
                             coords = vec3(config.locations.mainEntrance.coords.xyz),
@@ -265,7 +266,7 @@ CreateThread(function()
                     local function onEnter()
                         lib.showTextUI(Lang:t('info.go_outside'))
                     end
-                     
+
                     local function onExit()
                         lib.hideTextUI()
                     end
@@ -277,16 +278,16 @@ CreateThread(function()
                             while not IsScreenFadedOut() do
                                 Wait(10)
                             end
-    
+
                             SetEntityCoords(cache.ped, config.locations.outside.coords.x, config.locations.outside.coords.y, config.locations.outside.coords.z, false, false, false, false)
                             SetEntityHeading(cache.ped, config.locations.outside.coords.w)
-    
+
                             Wait(100)
-    
+
                             DoScreenFadeIn(1000)
                         end
                     end
-                    
+
                     if not MainExit then
                         MainExit = lib.zones.box({
                             coords = vec3(config.locations.inside.coords.xyz),
