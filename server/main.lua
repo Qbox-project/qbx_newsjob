@@ -1,22 +1,34 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
-
-QBCore.Commands.Add("newscam", "Grab a news camera", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Cam:ToggleCam", source)
-    end
+lib.addCommand('newscam', {
+    help = Lang:t("info.newscam"),
+}, function(source)
+    local Player = exports.qbx_core:GetPlayer(source)
+    if Player.PlayerData.job.name ~= "reporter" then return end
+    TriggerClientEvent("Cam:ToggleCam", source)
 end)
 
-QBCore.Commands.Add("newsmic", "Grab a news microphone", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Mic:ToggleMic", source)
-    end
+lib.addCommand('newsmic', {
+    help = Lang:t("info.newsmic"),
+}, function(source)
+    local Player = exports.qbx_core:GetPlayer(source)
+    if Player.PlayerData.job.name ~= "reporter" then return end
+    TriggerClientEvent("Mic:ToggleMic", source)
 end)
 
-QBCore.Commands.Add("newsbmic", "Grab a Boom microphone", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Mic:ToggleBMic", source)
-    end
+lib.addCommand('newsbmic', {
+    help = Lang:t("info.newsbmic"),
+}, function(source)
+    local Player = exports.qbx_core:GetPlayer(source)
+    if Player.PlayerData.job.name ~= "reporter" then return end
+    TriggerClientEvent("Mic:ToggleBMic", source)
+end)
+
+lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate, warp)
+    local netId = SpawnVehicle(source, model, coords, warp)
+    if not netId or netId == 0 then return end
+    local veh = NetworkGetEntityFromNetworkId(netId)
+    if not veh or veh == 0 then return end
+
+    SetVehicleNumberPlateText(veh, plate)
+    TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
+    return netId
 end)
