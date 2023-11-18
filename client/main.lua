@@ -107,7 +107,6 @@ CreateThread(function()
             if QBX.PlayerData.job.name == 'reporter' then
                 if #(pos - vector3(config.locations.vehicleStorage.coords.xyz)) < 10.0 then
                     inRange = true
-                    ---@diagnostic disable-next-line: param-type-mismatch
                     DrawMarker(2, config.locations.vehicleStorage.coords.x, config.locations.vehicleStorage.coords.y, config.locations.vehicleStorage.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(config.locations.vehicleStorage.coords.x, config.locations.vehicleStorage.coords.y, config.locations.vehicleStorage.coords.z)) < 1.5 then
                         local function onEnter()
@@ -151,7 +150,6 @@ CreateThread(function()
                     end
                 elseif  #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 5.0 then
                     inRange = true
-                    ---@diagnostic disable-next-line: param-type-mismatch
                     DrawMarker(2, config.locations.helicopterStorage.coords.x, config.locations.helicopterStorage.coords.y, config.locations.helicopterStorage.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 1.5 then
                         local function onEnter()
