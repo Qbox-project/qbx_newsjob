@@ -1,9 +1,11 @@
 local config = require 'config.client'
+IsLoggedIn = LocalPlayer.state.isLoggedIn
+local VehicleZone, HeliZone, MainEntrance, MainExit = nil, nil, nil, nil
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    if QBX.PlayerData.job.name == 'reporter' then
+if config.useBlips then
+    CreateThread(function()
         local blip = AddBlipForCoord(config.locations.mainEntrance.coords.x, config.locations.mainEntrance.coords.y, config.locations.mainEntrance.coords.z)
-        SetBlipSprite(blip, 184)
+        SetBlipSprite(blip, 459)
         SetBlipDisplay(blip, 4)
         SetBlipScale(blip, 0.8)
         SetBlipAsShortRange(blip, true)
@@ -11,50 +13,36 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         BeginTextCommandSetBlipName('STRING')
         AddTextComponentSubstringPlayerName(config.locations.mainEntrance.label)
         EndTextCommandSetBlipName(blip)
-    end
-end)
-
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function()
-    if QBX.PlayerData.job.name == 'reporter' then
-        local blip = AddBlipForCoord(config.locations.mainEntrance.coords.x, config.locations.mainEntrance.coords.y, config.locations.mainEntrance.coords.z)
-        SetBlipSprite(blip, 184)
-        SetBlipDisplay(blip, 4)
-        SetBlipScale(blip, 0.8)
-        SetBlipAsShortRange(blip, true)
-        SetBlipColour(blip, 1)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentSubstringPlayerName(config.locations.mainEntrance.label)
-        EndTextCommandSetBlipName(blip)
-    end
-end)
-
-local function takeOutVehicle(vehicleInfo)
-    local plyCoords = GetEntityCoords(cache.ped)
-    local coords = vec4(plyCoords.x, plyCoords.y, plyCoords.z, GetEntityHeading(cache.ped))
-    if not coords then return end
-
-    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehicleInfo, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
-    local timeout = 100
-    while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
-        Wait(10)
-        timeout -= 1
-    end
-    local veh = NetToVeh(netId)
-    if veh == 0 then
-        exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
-        return
-    end
-    local vehClass = GetVehicleClass(veh)
-    if vehClass == 12 then -- Vans
-        SetVehicleLivery(veh, 2)
-    end
-    SetEntityHeading(veh, coords.w)
-    SetVehicleFuelLevel(veh, 100.0)
-    SetVehicleEngineOn(veh, true, true, false)
-    CurrentPlate = GetPlate(veh)
+    end)
 end
 
-function MenuVehicleGarage()
+local function takeOutVehicle(vehicleInfo)
+    if QBX.PlayerData.job.name == 'reporter' then
+        local coords = config.locations.vehicleStorage.coords
+        if not coords then
+            local plyCoords = GetEntityCoords(cache.ped)
+            coords = vec4(plyCoords.x, plyCoords.y, plyCoords.z, GetEntityHeading(cache.ped))
+        end
+
+        local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehicleInfo, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
+        local timeout = 100
+        while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
+            Wait(10)
+            timeout = timeout - 1
+        end
+        local veh = NetToVeh(netId)
+        if veh == 0 then
+            exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
+            return
+        end
+        SetVehicleFuelLevel(veh, 100.0)
+        SetVehicleEngineOn(veh, true, true, false)
+        SetVehicleLivery(veh, 2)
+        CurrentPlate = GetPlate(veh)
+    end
+end
+
+local function menuVehicleGarage()
     local authorizedVehicles = config.authorizedVehicles[QBX.PlayerData.job.grade.level]
     local optionsMenu = {}
 
@@ -76,15 +64,40 @@ function MenuVehicleGarage()
     lib.showContext('weazel_garage_context_menu')
 end
 
-function MenuHeliGarage()
-    local helicopters = config.helicopters[QBX.PlayerData.job.grade.level]
+local function takeOutHeli(vehicleInfo)
+    if QBX.PlayerData.job.name == 'reporter' then
+        local coords = config.locations.helicopterStorage.coords.xyz
+        if not coords then
+            local plyCoords = GetEntityCoords(cache.ped)
+            coords = vec4(plyCoords.x, plyCoords.y, plyCoords.z, GetEntityHeading(cache.ped))
+        end
+
+        local netId = lib.callback.await('qbx_newsjob:server:spawnHeli', false, vehicleInfo, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
+        local timeout = 100
+        while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
+            Wait(10)
+            timeout = timeout - 1
+        end
+        local veh = NetToVeh(netId)
+        if veh == 0 then
+            exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
+            return
+        end
+        SetVehicleFuelLevel(veh, 100.0)
+        SetVehicleEngineOn(veh, true, true, false)
+        CurrentPlate = GetPlate(veh)
+    end
+end
+
+local function menuHeliGarage()
+    local helicopters = config.authorizedhelicopters[QBX.PlayerData.job.grade.level]
     local optionsMenu = {}
 
     for veh, label in pairs(helicopters) do
         optionsMenu[#optionsMenu + 1] = {
             title = label,
             onSelect = function()
-                takeOutVehicle(veh)
+                takeOutHeli(veh)
             end,
         }
     end
@@ -101,7 +114,7 @@ end
 CreateThread(function()
     while true do
         Wait(0)
-        if LocalPlayer.state.isLoggedIn then
+        if IsLoggedIn then
             local inRange = false
             local pos = GetEntityCoords(cache.ped)
             if QBX.PlayerData.job.name == 'reporter' then
@@ -122,23 +135,19 @@ CreateThread(function()
                         end
 
                         local function inside()
-                            if cache.vehicle then
-                                if IsControlJustReleased(0, 38) then
-                                    if IsPedInAnyVehicle(cache.ped, false) then
-                                        DeleteVehicle(cache.vehicle)
-                                    end
-                                end
-                            else
-                                if IsControlJustReleased(0, 38) then
-                                    MenuVehicleGarage()
+                            if IsControlJustReleased(0, 38) then
+                                if cache.vehicle then
+                                    DeleteVehicle(cache.vehicle)
+                                else
+                                    menuVehicleGarage()
                                 end
                             end
                         end
                         if not VehicleZone then
                             VehicleZone = lib.zones.box({
                                 coords = vec3(config.locations.vehicleStorage.coords.xyz),
-                                size = vec3(4, 4, 4),
-                                rotation = 45,
+                                size = vec3(6.0, 4.0, 4.0),
+                                rotation = 0.0,
                                 debug = config.debugZones,
                                 inside = inside,
                                 onEnter = onEnter,
@@ -148,7 +157,7 @@ CreateThread(function()
 
                         inRange = true
                     end
-                elseif  #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 5.0 then
+                elseif #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 5.0 then
                     inRange = true
                     DrawMarker(2, config.locations.helicopterStorage.coords.x, config.locations.helicopterStorage.coords.y, config.locations.helicopterStorage.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
                     if #(pos - vector3(config.locations.helicopterStorage.coords.xyz)) < 1.5 then
@@ -165,15 +174,11 @@ CreateThread(function()
                         end
 
                         local function inside()
-                            if cache.vehicle then
-                                if IsControlJustReleased(0, 38) then
-                                    if IsPedInAnyVehicle(cache.ped, false) then
-                                        DeleteVehicle(cache.vehicle)
-                                    end
-                                end
-                            else
-                                if IsControlJustReleased(0, 38) then
-                                    MenuHeliGarage()
+                            if IsControlJustReleased(0, 38) then
+                                if cache.vehicle then
+                                    DeleteVehicle(cache.vehicle)
+                                else
+                                    menuHeliGarage()
                                 end
                             end
                         end
@@ -218,7 +223,7 @@ CreateThread(function()
     while true do
         Wait(0)
         local inRange = false
-        if LocalPlayer.state.isLoggedIn then
+        if IsLoggedIn then
             local pos = GetEntityCoords(cache.ped)
             if #(pos - vector3(config.locations.mainEntrance.coords.xyz)) < 1.5 or #(pos - vector3(config.locations.inside.coords.xyz)) < 1.5 then
                 inRange = true
