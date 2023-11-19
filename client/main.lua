@@ -1,6 +1,6 @@
 local config = require 'config.client'
 IsLoggedIn = LocalPlayer.state.isLoggedIn
-local VehicleZone, HeliZone, MainEntrance, MainExit = nil, nil, nil, nil
+local VehicleZone, HeliZone, mainEntrance, mainExit, heliEntrance, heliExit = nil, nil, nil, nil, nil, nil
 
 if config.useBlips then
     CreateThread(function()
@@ -253,8 +253,8 @@ CreateThread(function()
                         end
                     end
 
-                    if not MainEntrance then
-                        MainEntrance = lib.zones.box({
+                    if not mainEntrance then
+                        mainEntrance = lib.zones.box({
                             coords = vec3(config.locations.mainEntrance.coords.xyz),
                             size = vec3(4, 4, 4),
                             rotation = 267.49,
@@ -291,11 +291,11 @@ CreateThread(function()
                         end
                     end
 
-                    if not MainExit then
-                        MainExit = lib.zones.box({
+                    if not mainExit then
+                        mainExit = lib.zones.box({
                             coords = vec3(config.locations.inside.coords.xyz),
-                            size = vec3(2, 2, 2),
-                            rotation = 245.46,
+                            size = vec3(1.0, 2.25, 3.45),
+                            rotation = 340.0,
                             debug = config.debugZones,
                             inside = inside,
                             onEnter = onEnter,
@@ -307,13 +307,115 @@ CreateThread(function()
         end
         if not inRange then
             Wait(1000)
-            if MainEntrance then
-                MainEntrance:remove()
-                MainEntrance = nil
+            if mainEntrance then
+                mainEntrance:remove()
+                mainEntrance = nil
             end
-            if MainExit then
-                MainExit:remove()
-                MainExit = nil
+            if mainExit then
+                mainExit:remove()
+                mainExit = nil
+            end
+        end
+    end
+end)
+
+CreateThread(function()
+    while true do
+        Wait(0)
+        local inRange = false
+
+        if IsLoggedIn then
+            local pos = GetEntityCoords(cache.ped)
+            if #(pos - vector3(config.locations.helicopterStorageEntrance.coords.xyz)) < 1.5 or #(pos - vector3(config.locations.helicopterStorageExit.coords.xyz)) < 1.5 then
+                inRange = true
+                if #(pos - vec3(config.locations.helicopterStorageEntrance.coords.xyz)) < 1.5 then
+                    local function onEnter()
+                        lib.showTextUI(Lang:t('info.heli_enter'))
+                    end
+
+                    local function onExit()
+                        lib.hideTextUI()
+                    end
+
+                    local function inside()
+                        if IsControlJustReleased(0, 38) then
+                            lib.hideTextUI()
+                            DoScreenFadeOut(500)
+                            while not IsScreenFadedOut() do
+                                Wait(10)
+                            end
+
+                            SetEntityCoords(cache.ped, config.locations.helicopterStorageExit.coords.x, config.locations.helicopterStorageExit.coords.y, config.locations.helicopterStorageExit.coords.z, false, false, false, false)
+                            SetEntityHeading(cache.ped, config.locations.helicopterStorageExit.coords.w)
+
+                            Wait(100)
+
+                            DoScreenFadeIn(1000)
+                        end
+                    end
+
+                    if not heliEntrance then
+                        heliEntrance = lib.zones.box({
+                            coords = vec3(config.locations.helicopterStorageEntrance.coords.xyz),
+                            size = vec3(1.0, 2.25, 3.45),
+                            rotation = 340.0,
+                            debug = config.debugZones,
+                            inside = inside,
+                            onEnter = onEnter,
+                            onExit = onExit
+                        })
+                    end
+
+                elseif #(pos - vector3(config.locations.helicopterStorageExit.coords.xyz)) < 1.5 then
+                    local function onEnter()
+                        lib.showTextUI(Lang:t('info.heli_exit'))
+                    end
+
+                    local function onExit()
+                        lib.hideTextUI()
+                    end
+
+                    local function inside()
+                        if IsControlJustReleased(0, 38) then
+                            lib.hideTextUI()
+                            DoScreenFadeOut(500)
+                            while not IsScreenFadedOut() do
+                                Wait(10)
+                            end
+
+                            SetEntityCoords(cache.ped, config.locations.helicopterStorageEntrance.coords.x, config.locations.helicopterStorageEntrance.coords.y, config.locations.helicopterStorageEntrance.coords.z, false, false, false, false)
+                            SetEntityHeading(cache.ped, config.locations.helicopterStorageEntrance.coords.w)
+
+                            Wait(100)
+
+                            DoScreenFadeIn(1000)
+                        end
+                    end
+
+                    if not heliExit then
+                        heliExit = lib.zones.box({
+                            coords = vec3(config.locations.helicopterStorageExit.coords.xyz),
+                            size = vec3(1.9, 4.3, 3.2),
+                            rotation = 0.0,
+                            debug = config.debugZones,
+                            inside = inside,
+                            onEnter = onEnter,
+                            onExit = onExit
+                        })
+                    end
+                end
+            end
+        end
+
+        if not inRange then
+            Wait(1000)
+            if heliEntrance then
+                heliEntrance:remove()
+                heliEntrance = nil
+            end
+            if heliExit then
+                heliExit:remove()
+                heliExit = nil
             end
         end
     end
