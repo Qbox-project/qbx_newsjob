@@ -3,7 +3,7 @@ local Translations = {
         cant_spawn_vehicle = 'Something went wrong spawning the vehicle'
     },
     info = {
-        weazle_overlay = 'Weazle Overlay ~INPUT_PICKUP~ \nFilm Overlay: ~INPUT_INTERACTION_MENU~',
+        weazle_overlay = 'Weazel Overlay: [E]  \nFilm Overlay: [M]',
         weazel_news_vehicles = 'Weazel News Vehicles',
         close_menu = '⬅ Close Menu',
         weazel_news_helicopters = 'Weazel News Helicopters',

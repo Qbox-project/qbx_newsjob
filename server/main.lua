@@ -1,25 +1,25 @@
 lib.addCommand('newscam', {
-    help = Lang:t("info.newscam"),
+    help = Lang:t('info.newscam'),
 }, function(source)
     local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= "reporter" then return end
-    TriggerClientEvent("Cam:ToggleCam", source)
+    if Player.PlayerData.job.name ~= 'reporter' then return end
+    TriggerClientEvent('qbx_newsjob:client:toggleCam', source)
 end)
 
 lib.addCommand('newsmic', {
-    help = Lang:t("info.newsmic"),
+    help = Lang:t('info.newsmic'),
 }, function(source)
     local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= "reporter" then return end
-    TriggerClientEvent("Mic:ToggleMic", source)
+    if Player.PlayerData.job.name ~= 'reporter' then return end
+    TriggerClientEvent('qbx_newsjob:client:toggleMic', source)
 end)
 
 lib.addCommand('newsbmic', {
-    help = Lang:t("info.newsbmic"),
+    help = Lang:t('info.newsbmic'),
 }, function(source)
     local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= "reporter" then return end
-    TriggerClientEvent("Mic:ToggleBMic", source)
+    if Player.PlayerData.job.name ~= 'reporter' then return end
+    TriggerClientEvent('qbx_newsjob:client:toggleBMic', source)
 end)
 
 lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate, warp)

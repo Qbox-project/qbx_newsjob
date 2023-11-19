@@ -1,5 +1,5 @@
 return {
-    debugZones = true,
+    debugZones = false,
     useBlips = true,
     locations = {
         mainEntrance = {label = 'Weazle News HQ', coords = vector4(-597.89, -929.95, 24.0, 271.5)},
