@@ -299,7 +299,6 @@ CreateThread(function()
 						HideHUDThisFrame()
 						DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255)
 						DrawScaleformMovie(scaleform2, 0.5, 0.63, 1.0, 1.0, 255, 255, 255, 255)
-						Breaking(Lang:t("text.breaking_news"))
 						local camHeading = GetGameplayCamRelativeHeading()
 						local camPitch = GetGameplayCamRelativePitch()
 						if camPitch < -70.0 then
