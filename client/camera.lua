@@ -23,7 +23,7 @@ local zoomspeed = 10.0
 local speed_lr = 8.0
 local speed_ud = 8.0
 local camera = false
-local fov = (fov_max+fov_min)*0.5
+local fov = (fov_max + fov_min) * 0.5
 local new_z
 local movcamera
 local newscamera
@@ -94,28 +94,13 @@ local function drawRct(x,y,width,height,r,g,b,a)
 	DrawRect(x + width/2, y + height/2, width, height, r, g, b, a)
 end
 
-local function Breaking(text)
-	SetTextColour(255, 255, 255, 255)
-	SetTextFont(8)
-	SetTextScale(1.2, 1.2)
-	SetTextWrap(0.0, 1.0)
-	SetTextCentre(false)
-	SetTextDropshadow(0, 0, 0, 0, 255)
-	SetTextEdge(1, 0, 0, 0, 205)
-	SetTextEntry("STRING")
-	AddTextComponentString(text)
-	DrawText(0.2, 0.85)
-end
-
 local function DisplayNotification(string)
 	SetTextComponentFormat("STRING")
 	AddTextComponentString(string)
     DisplayHelpTextFromStringLabel(0, 0, 1, -1)
 end
 
----------------------------------------------------------------------------
 -- Toggling Cam --
----------------------------------------------------------------------------
 
 RegisterNetEvent("Cam:ToggleCam", function()
     if not holdingCam then
@@ -161,9 +146,9 @@ CreateThread(function()
 				end
 
 				DisablePlayerFiring(PlayerId(), true)
-				DisableControlAction(0,25,true) -- disable aim
+				DisableControlAction(0, 25, true) -- disable aim
 				DisableControlAction(0, 44,  true) -- INPUT_COVER
-				DisableControlAction(0,37,true) -- INPUT_SELECT_WEAPON
+				DisableControlAction(0, 37, true) -- INPUT_SELECT_WEAPON
 				SetCurrentPedWeapon(PlayerPedId(), GetHashKey("WEAPON_UNARMED"), true)
 				Wait(7)
 			else
@@ -175,9 +160,7 @@ CreateThread(function()
 	end
 end)
 
----------------------------------------------------------------------------
 -- Movie Cam --
----------------------------------------------------------------------------
 
 CreateThread(function()
 	while true do
@@ -214,9 +197,9 @@ CreateThread(function()
 						CheckInputRotation(cam1, zoomvalue)
 						HandleZoom(cam1)
 						HideHUDThisFrame()
-						drawRct(UI.x + 0.0, 	UI.y + 0.0, 1.0,0.15,0,0,0,255) -- Top Bar
+						drawRct(UI.x + 0.0, 	UI.y + 0.0, 1.0, 0.15, 0, 0, 0, 255) -- Top Bar
 						DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255)
-						drawRct(UI.x + 0.0, 	UI.y + 0.85, 1.0,0.16,0,0,0,255) -- Bottom Bar
+						drawRct(UI.x + 0.0, 	UI.y + 0.85, 1.0, 0.16, 0, 0, 0, 255) -- Bottom Bar
 						local camHeading = GetGameplayCamRelativeHeading()
 						local camPitch = GetGameplayCamRelativePitch()
 						if camPitch < -70.0 then
@@ -254,9 +237,7 @@ CreateThread(function()
 	end
 end)
 
----------------------------------------------------------------------------
 -- News Cam --
----------------------------------------------------------------------------
 
 CreateThread(function()
 	while true do
@@ -277,6 +258,9 @@ CreateThread(function()
 					local lPed = PlayerPedId()
 					local vehicle = GetVehiclePedIsIn(lPed)
 					local cam2 = CreateCam("DEFAULT_SCRIPTED_FLY_CAMERA", true)
+					local msg = Lang:t("text.title_breaking_news")
+					local bottom = Lang:t("text.bottom_breaking_news")
+					local title = Lang:t("text.breaking_news")
 					AttachCamToEntity(cam2, lPed, 0.0,0.0,1.0, true)
 					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(lPed))
 					SetCamFov(cam2, fov)
@@ -284,6 +268,25 @@ CreateThread(function()
 					PushScaleformMovieFunction(scaleform, "SET_CAM_LOGO")
 					PushScaleformMovieFunction(scaleform2, "breaking_news")
 					PopScaleformMovieFunctionVoid()
+
+					BeginScaleformMovieMethod(scaleform2, "SET_TEXT")
+					PushScaleformMovieFunctionParameterString(msg)
+					PushScaleformMovieFunctionParameterString(bottom)
+					EndScaleformMovieMethod()
+
+					BeginScaleformMovieMethod(scaleform2, "SET_SCROLL_TEXT")
+
+					PushScaleformMovieFunctionParameterInt(0) -- 0 = top, 1 = bottom
+					PushScaleformMovieFunctionParameterInt(0)
+
+					PushScaleformMovieFunctionParameterString(title)
+					EndScaleformMovieMethod()
+
+					BeginScaleformMovieMethod(scaleform2, "DISPLAY_SCROLL_TEXT")
+					PushScaleformMovieFunctionParameterInt(0)
+					PushScaleformMovieFunctionParameterInt(0)
+					EndScaleformMovieMethod()
+
 					while newscamera and not IsEntityDead(lPed) and (GetVehiclePedIsIn(lPed) == vehicle) and true do
 						if IsControlJustPressed(1, 177) then
 							PlaySoundFrontend(-1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", false)
@@ -334,9 +337,7 @@ CreateThread(function()
 	end
 end)
 
----------------------------------------------------------------------------
---B Mic --
----------------------------------------------------------------------------
+--Boom Mic --
 
 RegisterNetEvent("Mic:ToggleBMic", function()
     if not holdingBmic then
@@ -399,18 +400,15 @@ CreateThread(function()
 	end
 end)
 
----------------------------------------------------------------------------
 -- Events --
----------------------------------------------------------------------------
 
 -- Activate camera
 RegisterNetEvent('camera:Activate', function()
 	camera = not camera
 end)
 
----------------------------------------------------------------------------
 -- Toggling Mic --
----------------------------------------------------------------------------
+
 RegisterNetEvent("Mic:ToggleMic", function()
     if not holdingMic then
         RequestModel(GetHashKey(micModel))

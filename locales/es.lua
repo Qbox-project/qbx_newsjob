@@ -10,7 +10,9 @@ local Translations = {
         helicopters = "[E] - Helicopteros",
         enter = "[E] - Entrar",
         go_outside = "[E] - Salir",
-        breaking_news= "¡NOTICIA DE ULTIMA HORA!"
+        breaking_news= "¡NOTICIA DE ULTIMA HORA!",
+        title_breaking_news = "Weazel Today - Noticia de ultima hora",
+        bottom_breaking_news = "Te traemos las ultimas noticias en vivo"
     },
 }
 
