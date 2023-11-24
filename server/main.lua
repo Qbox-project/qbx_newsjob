@@ -22,19 +22,8 @@ lib.addCommand('newsbmic', {
     TriggerClientEvent('qbx_newsjob:client:toggleBMic', source)
 end)
 
-lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate, warp)
-    local netId = SpawnVehicle(source, model, coords, warp)
-    if not netId or netId == 0 then return end
-    local veh = NetworkGetEntityFromNetworkId(netId)
-    if not veh or veh == 0 then return end
-    SetEntityHeading(veh, coords.w)
-    SetVehicleNumberPlateText(veh, plate)
-    TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
-    return netId
-end)
-
-lib.callback.register('qbx_newsjob:server:spawnHeli', function(source, model, coords, plate, warp)
-    local netId = SpawnVehicle(source, model, coords, warp)
+lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate)
+    local netId = SpawnVehicle(source, model, coords)
     if not netId or netId == 0 then return end
     local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 then return end

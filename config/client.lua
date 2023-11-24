@@ -1,14 +1,15 @@
 return {
-    debugZones = false,
+    useTarget = GetConvar('UseTarget', 'false') == 'true',
+    debugPoly = false,
     useBlips = true,
     locations = {
-        mainEntrance = {label = 'Weazle News HQ', coords = vector4(-597.89, -929.95, 24.0, 271.5)},
-        inside = {label = 'Weazle News HQ Inside', coords = vector4(-77.55, -833.75, 243.0, 67.5)},
-        outside = {label = 'Weazle News HQ Outside', coords = vector4(-598.25, -929.86, 23.86, 86.5)},
-        vehicleStorage = {label = 'Vehicle Storage', coords = vector4(-557.0, -925.25, 24.0, 270.0)},
-        helicopterStorageEntrance = {label = 'Helicopter Storage Entrance', coords = vector4(-80.45, -832.7, 243.0, 72.0)},
-        helicopterStorageExit = {label = 'Helicopter Storage Exit', coords = vector4(-569.5, -928.05, 37.0, 85.25)},
-        helicopterStorage = {label = 'Helicopter Storage', coords = vector4(-583.08, -930.55, 36.83, 89.26)}
+        mainEntrance = {coords = vec4(-598.4, -929.85, 24.0, 271.5)},
+        inside = {coords = vec4(-77.55, -833.75, 243.0, 67.5)},
+        outside = {coords = vec4(-598.25, -929.86, 23.86, 86.5)},
+        vehicleStorage = {coords = vec4(-557.0, -925.25, 24.0, 270.0)},
+        roofEntrance = {coords = vec4(-80.45, -832.7, 243.0, 72.0)},
+        roofExit = {coords = vec4(-568.5, -927.75, 37.0, 85.25)},
+        helicopterStorage = {coords = vec4(-583.08, -930.55, 36.83, 89.26)}
     },
     authorizedVehicles = {
         [0] = {rumpo = 'Rumpo'}, -- Grade 0
