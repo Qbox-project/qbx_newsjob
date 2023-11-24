@@ -61,7 +61,7 @@ local function CheckInputRotation(cam, zoomvalue)
 end
 
 local function HandleZoom(cam)
-	if not ( IsPedSittingInAnyVehicle(cache.ped) ) then
+	if not cache.vehicle then
 
 		if IsControlJustPressed(0,241) then
 			fov = math.max(fov - zoomspeed, fov_min)
@@ -148,7 +148,7 @@ CreateThread(function()
 				DisableControlAction(0,25, true)
 				DisableControlAction(0, 44, true)
 				DisableControlAction(0,37, true)
-				SetCurrentPedWeapon(cache.ped, joaat(`WEAPON_UNARMED`), true)
+				SetCurrentPedWeapon(cache.ped, `WEAPON_UNARMED`, true)
 				Wait(0)
 			else
 				Wait(100)
@@ -176,7 +176,7 @@ CreateThread(function()
 						Wait(10)
 					end
 
-					local vehicle = GetVehiclePedIsIn(cache.ped)
+					local vehicle = cache.vehicle
 					local cam1 = CreateCam('DEFAULT_SCRIPTED_FLY_CAMERA', true)
 
 					AttachCamToEntity(cam1, cache.ped, 0.0,0.0,1.0, true)
@@ -186,7 +186,7 @@ CreateThread(function()
 					PushScaleformMovieFunction(scaleform, 'security_camera')
 					PopScaleformMovieFunctionVoid()
 
-					while movcamera and not IsEntityDead(cache.ped) and (GetVehiclePedIsIn(cache.ped) == vehicle) and true do
+					while movcamera and not IsEntityDead(cache.ped) and cache.vehicle == vehicle do
 						if IsControlJustPressed(0, 177) then
 							PlaySoundFrontend(-1, 'SELECT', 'HUD_FRONTEND_DEFAULT_SOUNDSET', false)
 							movcamera = false
