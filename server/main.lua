@@ -1,24 +1,35 @@
+local function checkReporterJob(source)
+    local Player = exports.qbx_core:GetPlayer(source)
+    return Player.PlayerData.job.name == 'reporter'
+end
+
 lib.addCommand('newscam', {
     help = Lang:t('info.newscam'),
 }, function(source)
-    local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= 'reporter' then return end
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
+    end
     TriggerClientEvent('qbx_newsjob:client:toggleCam', source)
 end)
 
 lib.addCommand('newsmic', {
     help = Lang:t('info.newsmic'),
 }, function(source)
-    local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= 'reporter' then return end
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
+    end
     TriggerClientEvent('qbx_newsjob:client:toggleMic', source)
 end)
 
 lib.addCommand('newsbmic', {
     help = Lang:t('info.newsbmic'),
 }, function(source)
-    local Player = exports.qbx_core:GetPlayer(source)
-    if Player.PlayerData.job.name ~= 'reporter' then return end
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
+    end
     TriggerClientEvent('qbx_newsjob:client:toggleBMic', source)
 end)
 

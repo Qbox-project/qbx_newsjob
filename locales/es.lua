@@ -1,6 +1,7 @@
 local Translations = {
     error = {
-        cant_spawn_vehicle = 'Something went wrong spawning the vehicle'
+        cant_spawn_vehicle = 'Something went wrong spawning the vehicle',
+        no_access = 'You don\'t have access to this command.'
     },
     info = {
         weazle_overlay = 'Transmitir noticia en vivo ~INPUT_PICKUP~ \nGrabar noticia: ~INPUT_INTERACTION_MENU~',
@@ -13,8 +14,8 @@ local Translations = {
         helicopters = '[E] - Helicopteros',
         enter = '[E] - Entrar',
         go_outside = '[E] - Salir',
-        heli_enter = '[E] - Enter Helicopter Storage',
-        heli_exit = '[E] - Exit Helicopter Storage',
+        roof_enter = '[E] - Enter roof',
+        roof_exit = '[E] - Exit roof',
         breaking_news= '¡NOTICIA DE ULTIMA HORA!',
         newscam = 'Grab a news camera',
         newsmic = 'Grab a news microphone',

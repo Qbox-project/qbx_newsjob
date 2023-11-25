@@ -1,6 +1,7 @@
 local Translations = {
     error = {
-        cant_spawn_vehicle = 'Something went wrong spawning the vehicle'
+        cant_spawn_vehicle = 'Something went wrong spawning the vehicle',
+        no_access = 'You don\'t have access to this command.'
     },
     info = {
         weazle_overlay = 'Weazel Overlay: [E]  \nFilm Overlay: [M]',
