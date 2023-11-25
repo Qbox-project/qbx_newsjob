@@ -1,58 +1,56 @@
-QBCore = exports['qbx-core']:GetCoreObject()
-PlayerJob = {}
+local config = require 'config.client'
+local isLoggedIn = LocalPlayer.state.isLoggedIn
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    PlayerJob = QBCore.Functions.GetPlayerData().job
-    if PlayerJob.name == "reporter" then
-        local blip = AddBlipForCoord(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)
-        SetBlipSprite(blip, 225)
-        SetBlipDisplay(blip, 4)
-        SetBlipScale(blip, 0.6)
-        SetBlipAsShortRange(blip, true)
-        SetBlipColour(blip, 1)
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName(Config.Locations["main"].label)
-        EndTextCommandSetBlipName(blip)
-    end
-end)
+local mainEntranceTarget = 'mainEntranceTarget'
+local mainExitTarget = 'mainExitTarget'
+local enterRoofTarget = 'enterRoofTarget'
+local exitRoofTarget = 'exitRoofTarget'
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerJob = JobInfo
-    if PlayerJob.name == "reporter" then
-        local blip = AddBlipForCoord(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)
-        SetBlipSprite(blip, 225)
-        SetBlipDisplay(blip, 4)
-        SetBlipScale(blip, 0.6)
-        SetBlipAsShortRange(blip, true)
-        SetBlipColour(blip, 1)
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName(Config.Locations["main"].label)
-        EndTextCommandSetBlipName(blip)
-    end
-end)
+local exitZone, enterRoofZone, exitRoofZone, vehicleZone, heliZone = nil, nil, nil, nil, nil
 
-function TakeOutVehicle(vehicleInfo)
-    local coords = Config.Locations["vehicle"].coords
-    QBCore.Functions.SpawnVehicle(vehicleInfo, function(veh)
-        SetVehicleNumberPlateText(veh, "WZNW"..tostring(math.random(1000, 9999)))
-        SetEntityHeading(veh, coords.w)
-        SetVehicleFuelLevel(veh, 100.0)
-        TaskWarpPedIntoVehicle(cache.ped, veh, -1)
-        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-        SetVehicleEngineOn(veh, true, true, false)
-        SetVehicleLivery(veh, 2)
-        CurrentPlate = QBCore.Functions.GetPlate(veh)
-    end, coords, true)
+local function setLocationBlip()
+    local blip = AddBlipForCoord(config.locations.mainEntrance.coords.x, config.locations.mainEntrance.coords.y, config.locations.mainEntrance.coords.z)
+    SetBlipSprite(blip, 459)
+    SetBlipDisplay(blip, 4)
+    SetBlipScale(blip, 0.8)
+    SetBlipAsShortRange(blip, true)
+    SetBlipColour(blip, 1)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName(config.locations.mainEntrance.label)
+    EndTextCommandSetBlipName(blip)
 end
 
-function MenuGarage()
-    local authorizedVehicles = Config.Vehicles[QBCore.Functions.GetPlayerData().job.grade.level]
+local function takeOutVehicle(vehType, coords)
+    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehType, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
+    local timeout = 100
+    while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
+        Wait(10)
+        timeout = timeout - 1
+    end
+    local veh = NetToVeh(netId)
+    if veh == 0 then
+        exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
+        return
+    end
+    local vehClass = GetVehicleClass(veh)
+    if vehClass == 12 then
+        SetVehicleLivery(veh, 2)
+    end
+    SetVehicleFuelLevel(veh, 100.0)
+    SetVehicleFuelLevel(veh, 100.0)
+    TaskWarpPedIntoVehicle(cache.ped, veh, -1)
+    SetVehicleEngineOn(veh, true, true, false)
+    CurrentPlate = GetPlate(veh)
+end
+
+local function menuVehicleGarage()
+    local authorizedVehicles = config.authorizedVehicles[QBX.PlayerData.job.grade.level]
     local optionsMenu = {}
 
     for veh, label in pairs(authorizedVehicles) do
         optionsMenu[#optionsMenu + 1] = {
             title = label,
-            event = 'qb-newsjob:client:TakeOutVehicle',
+            event = 'qbx_newsjob:client:takeOutVehicle',
             args = {
                 vehicle = veh
             }
@@ -61,274 +59,430 @@ function MenuGarage()
 
     lib.registerContext({
         id = 'weazel_garage_context_menu',
-        title = Lang:t("text.weazel_news_vehicles"),
+        title = Lang:t('info.weazel_news_vehicles'),
         options = optionsMenu
     })
 
     lib.showContext('weazel_garage_context_menu')
 end
 
-function TakeOutHelicopters(vehicleInfo)
-    local coords = Config.Locations["heli"].coords
-    QBCore.Functions.SpawnVehicle(vehicleInfo, function(veh)
-        SetVehicleNumberPlateText(veh, "WZNW"..tostring(math.random(1000, 9999)))
-        SetEntityHeading(veh, coords.w)
-        SetVehicleFuelLevel(veh, 100.0)
-        TaskWarpPedIntoVehicle(cache.ped, veh, -1)
-        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-        SetVehicleEngineOn(veh, true, true, false)
-        SetVehicleLivery(veh, 2)
-        CurrentPlate = QBCore.Functions.GetPlate(veh)
-    end, coords, true)
-end
-
-function MenuHeliGarage()
-    local Helicopters = Config.Helicopters[QBCore.Functions.GetPlayerData().job.grade.level]
+local function menuHeliGarage()
+    local helicopters = config.authorizedhelicopters[QBX.PlayerData.job.grade.level]
     local optionsMenu = {}
 
-    for veh, label in pairs(Helicopters) do
+    for veh, label in pairs(helicopters) do
         optionsMenu[#optionsMenu + 1] = {
             title = label,
-            event = 'qb-newsjob:client:TakeOutHelicopters',
+            event = 'qbx_newsjob:client:takeOutVehicle',
             args = {
-                vehicle = veh
+                helicopter = veh
             }
         }
     end
 
     lib.registerContext({
         id = 'weazel_heli_context_menu',
-        title = Lang:t("text.weazel_news_helicopters"),
+        title = Lang:t('info.weazel_news_helicopters'),
         options = optionsMenu
     })
 
     lib.showContext('weazel_heli_context_menu')
 end
 
-CreateThread(function()
-    while true do
-        Wait(0)
-        if LocalPlayer.state.isLoggedIn then
-            local inRange = false
-            local boxZone = false
-            local pos = GetEntityCoords(cache.ped)
-            if PlayerJob.name == "reporter" then
-                if #(pos - vector3(Config.Locations["vehicle"].coords.x, Config.Locations["vehicle"].coords.y, Config.Locations["vehicle"].coords.z)) < 10.0 then
-                    inRange = true
-                    DrawMarker(2, Config.Locations["vehicle"].coords.x, Config.Locations["vehicle"].coords.y, Config.Locations["vehicle"].coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
-                    if #(pos - vector3(Config.Locations["vehicle"].coords.x, Config.Locations["vehicle"].coords.y, Config.Locations["vehicle"].coords.z)) < 1.5 then
-                        local function onEnter()
-                            if IsPedInAnyVehicle(cache.ped, false) then
-                                lib.showTextUI(Lang:t("text.store_vehicle"))
-                            else
-                                lib.showTextUI(Lang:t("text.vehicles"))
-                            end
-                        end
-                         
-                        local function onExit()
-                            lib.hideTextUI()
-                        end
+local function registerMainEntrance()
+    local coords = vec3(config.locations.mainEntrance.coords.xyz)
 
-                        local function inside()
-                            if IsPedInAnyVehicle(cache.ped, false) then
-                                if IsControlJustReleased(0, 38) then
-                                    if IsPedInAnyVehicle(cache.ped, false) then
-                                        DeleteVehicle(GetVehiclePedIsIn(cache.ped, false))
-                                    end
-                                end
-                            else
-                                if IsControlJustReleased(0, 38) then
-                                    MenuGarage()
-                                end
-                            end
-                        end
-                        
-                        if not VehicleZone then 
-                            VehicleZone = lib.zones.box({
-                                coords = vec3(Config.Locations["vehicle"].coords.x, Config.Locations["vehicle"].coords.y, Config.Locations["vehicle"].coords.z),
-                                size = vec3(4, 4, 4),
-                                rotation = 45,
-                                debug = Config.DebugZones,
-                                inside = inside,
-                                onEnter = onEnter,
-                                onExit = onExit
-                            })
-                        end
-
-                        inRange = true
-                    end
-                elseif  #(pos - vector3(Config.Locations["heli"].coords.x, Config.Locations["heli"].coords.y, Config.Locations["heli"].coords.z)) < 5.0 then
-                    inRange = true
-                    DrawMarker(2, Config.Locations["heli"].coords.x, Config.Locations["heli"].coords.y, Config.Locations["heli"].coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 200, 200, 222, false, false, 0, true, false, false, false)
-                    if #(pos - vector3(Config.Locations["heli"].coords.x, Config.Locations["heli"].coords.y, Config.Locations["heli"].coords.z)) < 1.5 then
-                        local function onEnter()
-                            if IsPedInAnyVehicle(cache.ped, false) then
-                                lib.showTextUI(Lang:t("text.store_helicopters"))
-                            else
-                                lib.showTextUI(Lang:t("text.helicopters"))
-                            end
-                        end
-                         
-                        local function onExit()
-                            lib.hideTextUI()
-                        end
-
-                        local function inside()
-                            if IsPedInAnyVehicle(cache.ped, false) then
-                                if IsControlJustReleased(0, 38) then
-                                    if IsPedInAnyVehicle(cache.ped, false) then
-                                        DeleteVehicle(GetVehiclePedIsIn(cache.ped, false))
-                                    end
-                                end
-                            else
-                                if IsControlJustReleased(0, 38) then
-                                    MenuHeliGarage()
-                                end
-                            end
-                        end
-                        
-                        if not HeliZone then
-                            HeliZone = lib.zones.box({
-                                coords = vec3(Config.Locations["heli"].coords.x, Config.Locations["heli"].coords.y, Config.Locations["heli"].coords.z),
-                                size = vec3(4, 4, 4),
-                                rotation = 267.49,
-                                debug = Config.DebugZones,
-                                inside = inside,
-                                onEnter = onEnter,
-                                onExit = onExit
-                            })
-                        end
-
-                        inRange = true
-                    end
+    if config.useTarget then
+        exports.ox_target:addBoxZone({
+            name = mainEntranceTarget,
+            coords = coords,
+            rotation = 0.0,
+            size = vec3(1.0, 5.85, 3),
+            debug = config.debugPoly,
+            options = {
+                {
+                    icon = 'fa-solid fa-house',
+                    type = 'client',
+                    event = 'qbx_newsjob:client:target:enterLocation',
+                    label = Lang:t("info.enter"),
+                    distance = 1
+                },
+            },
+        })
+    else
+        lib.zones.box({
+            coords = coords,
+            rotation = 0.0,
+            size = vec3(1.0, 5.85, 3),
+            debug = config.debugPoly,
+            onEnter = function()
+                lib.showTextUI(Lang:t("info.enter"))
+            end,
+            onExit = function()
+                lib.hideTextUI()
+            end,
+            inside = function()
+                if IsControlJustReleased(0, 38) then
+                    TriggerEvent('qbx_newsjob:client:target:enterLocation')
+                    lib.hideTextUI()
                 end
+            end
+        })
+    end
+end
 
-                if not inRange then
-                    Wait(1000)
-                    if VehicleZone then
-                        VehicleZone:remove()
-                        VehicleZone = nil
-                    end
-                    if HeliZone then
-                        HeliZone:remove()
-                        HeliZone = nil
-                    end
+local function registerMainExit()
+    local coords = vec3(config.locations.inside.coords.xyz)
+
+    if config.useTarget then
+        exitZone = exports.ox_target:addBoxZone({
+            name = mainExitTarget,
+            coords = coords,
+            size = vec3(1.0, 2.25, 3.45),
+            rotation = 340.0,
+            debug = config.debugPoly,
+            options = {
+                {
+                    icon = 'fa-solid fa-house',
+                    type = 'client',
+                    event = 'qbx_newsjob:client:target:exitLocation',
+                    label = Lang:t("info.go_outside"),
+                    distance = 1
+                },
+            },
+        })
+    else
+        exitZone = lib.zones.box({
+            coords = coords,
+            size = vec3(1.0, 2.25, 3.45),
+            rotation = 340.0,
+            debug = config.debugPoly,
+            onEnter = function()
+                lib.showTextUI(Lang:t("info.go_outside"))
+            end,
+            onExit = function()
+                lib.hideTextUI()
+            end,
+            inside = function()
+                if IsControlJustReleased(0, 38) then
+                    TriggerEvent('qbx_newsjob:client:target:exitLocation')
+                    lib.hideTextUI()
                 end
+            end
+        })
+    end
+end
+
+local function destroyMainExitZones()
+    if not exitZone then
+        return
+    end
+
+    if config.useTarget then
+        exports.ox_target:removeZone(mainExitTarget)
+        exitZone = nil
+    else
+        exitZone:remove()
+        exitZone = nil
+    end
+end
+
+local function registerEnterRoof()
+    local coords = vec3(config.locations.roofEntrance.coords.xyz)
+
+    if config.useTarget then
+        enterRoofZone = exports.ox_target:addBoxZone({
+            name = enterRoofTarget,
+            coords = coords,
+            size = vec3(1.0, 2.25, 3.45),
+            rotation = 340.0,
+            debug = config.debugPoly,
+            options = {
+                {
+                    icon = 'fa-solid fa-house',
+                    type = 'client',
+                    event = 'qbx_newsjob:client:target:enterRoof',
+                    label = Lang:t("info.roof_enter"),
+                    distance = 1
+                },
+            },
+        })
+    else
+        enterRoofZone = lib.zones.box({
+            coords = coords,
+            size = vec3(1.0, 2.25, 3.45),
+            rotation = 340.0,
+            debug = config.debugPoly,
+            onEnter = function()
+                lib.showTextUI(Lang:t("info.roof_enter"))
+            end,
+            onExit = function()
+                lib.hideTextUI()
+            end,
+            inside = function()
+                if IsControlJustReleased(0, 38) then
+                    TriggerEvent('qbx_newsjob:client:target:enterRoof')
+                    lib.hideTextUI()
+                end
+            end
+        })
+    end
+end
+
+local function destroyEnterRoofZones()
+    if not enterRoofZone then
+        return
+    end
+
+    if config.useTarget then
+        exports.ox_target:removeZone(enterRoofTarget)
+        enterRoofZone = nil
+    else
+        enterRoofZone:remove()
+        enterRoofZone = nil
+    end
+end
+
+local function registerExitRoof()
+    local coords = vec3(config.locations.roofExit.coords.xyz)
+
+    if config.useTarget then
+        exitRoofZone = exports.ox_target:addBoxZone({
+            name = exitRoofTarget,
+            coords = coords,
+            size = vec3(1.0, 1.45, 2.75),
+            rotation = 0.0,
+            debug = config.debugPoly,
+            options = {
+                {
+                    icon = 'fa-solid fa-house',
+                    type = 'client',
+                    event = 'qbx_newsjob:client:target:exitRoof',
+                    label = Lang:t("info.roof_exit"),
+                    distance = 1
+                },
+            },
+        })
+    else
+        exitRoofZone = lib.zones.box({
+            coords = coords,
+            size = vec3(1.0, 1.45, 2.75),
+            rotation = 0.0,
+            debug = config.debugPoly,
+            onEnter = function()
+                lib.showTextUI(Lang:t("info.roof_exit"))
+            end,
+            onExit = function()
+                lib.hideTextUI()
+            end,
+            inside = function()
+                if IsControlJustReleased(0, 38) then
+                    TriggerEvent('qbx_newsjob:client:target:exitRoof')
+                    lib.hideTextUI()
+                end
+            end
+        })
+    end
+end
+
+local function destroyExitRoofZones()
+    if not exitRoofZone then
+        return
+    end
+
+    if config.useTarget then
+        exports.ox_target:removeZone(exitRoofTarget)
+        exitRoofZone = nil
+    else
+        exitRoofZone:remove()
+        exitRoofZone = nil
+    end
+end
+
+local function registerVehicleStorage()
+    local coords = vec3(config.locations.vehicleStorage.coords.xyz)
+    vehicleZone = lib.zones.box({
+        coords = coords,
+        size = vec3(6.0, 4.0, 4.0),
+        rotation = 0.0,
+        debug = config.debugPoly,
+        onEnter = function()
+            if cache.vehicle then
+                lib.showTextUI(Lang:t('info.store_vehicle'))
             else
-                Wait(2500)
+                lib.showTextUI(Lang:t('info.vehicles'))
             end
-        else
-            Wait(2500)
-        end
-    end
-end)
-
-CreateThread(function()
-    while true do
-        Wait(0)
-        local inRange = false
-        if LocalPlayer.state.isLoggedIn then
-            local pos = GetEntityCoords(cache.ped)
-            if #(pos - vector3(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)) < 1.5 or #(pos - vector3(Config.Locations["inside"].coords.x, Config.Locations["inside"].coords.y, Config.Locations["inside"].coords.z)) < 1.5 then
-                inRange = true
-                if #(pos - vector3(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)) < 1.5 then
-                    local function onEnter()
-                        lib.showTextUI(Lang:t("text.enter"))
-                    end
-                     
-                    local function onExit()
-                        lib.hideTextUI()
-                    end
-
-                    local function inside()
-                        if IsControlJustReleased(0, 38) then
-                            lib.hideTextUI()
-                            DoScreenFadeOut(500)
-                            while not IsScreenFadedOut() do
-                                Wait(10)
-                            end
-    
-                            SetEntityCoords(cache.ped, Config.Locations["inside"].coords.x, Config.Locations["inside"].coords.y, Config.Locations["inside"].coords.z, false, false, false, false)
-                            SetEntityHeading(cache.ped, Config.Locations["inside"].coords.w)
-    
-                            Wait(100)
-    
-                            DoScreenFadeIn(1000)
-                        end
-                    end
-                    
-                    if not MainEntrance then
-                        MainEntrance = lib.zones.box({
-                            coords = vec3(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z),
-                            size = vec3(4, 4, 4),
-                            rotation = 267.49,
-                            debug = Config.DebugZones,
-                            inside = inside,
-                            onEnter = onEnter,
-                            onExit = onExit
-                        })
-                    end
-
-                elseif #(pos - vector3(Config.Locations["inside"].coords.x, Config.Locations["inside"].coords.y, Config.Locations["inside"].coords.z)) < 1.5 then
-                    local function onEnter()
-                        lib.showTextUI(Lang:t("text.go_outside"))
-                    end
-                     
-                    local function onExit()
-                        lib.hideTextUI()
-                    end
-
-                    local function inside()
-                        if IsControlJustReleased(0, 38) then
-                            lib.hideTextUI()
-                            DoScreenFadeOut(500)
-                            while not IsScreenFadedOut() do
-                                Wait(10)
-                            end
-    
-                            SetEntityCoords(cache.ped, Config.Locations["outside"].coords.x, Config.Locations["outside"].coords.y, Config.Locations["outside"].coords.z, false, false, false, false)
-                            SetEntityHeading(cache.ped, Config.Locations["outside"].coords.w)
-    
-                            Wait(100)
-    
-                            DoScreenFadeIn(1000)
-                        end
-                    end
-                    
-                    if not MainExit then
-                        MainExit = lib.zones.box({
-                            coords = vec3(Config.Locations["inside"].coords.x, Config.Locations["inside"].coords.y, Config.Locations["inside"].coords.z),
-                            size = vec3(2, 2, 2),
-                            rotation = 245.46,
-                            debug = Config.DebugZones,
-                            inside = inside,
-                            onEnter = onEnter,
-                            onExit = onExit
-                        })
-                    end
+        end,
+        onExit = function()
+            lib.hideTextUI()
+        end,
+        inside = function()
+            if IsControlJustReleased(0, 38) then
+                if cache.vehicle then
+                    DeleteVehicle(cache.vehicle)
+                else
+                    menuVehicleGarage()
                 end
             end
         end
-        if not inRange then
-            Wait(1000)
-            if MainEntrance then
-                MainEntrance:remove()
-                MainEntrance = nil
+    })
+end
+
+local function destroyVehicleStorageZones()
+    if not vehicleZone then
+        return
+    end
+
+    vehicleZone:remove()
+    vehicleZone = nil
+end
+
+local function registerHeliStorage()
+    local coords = vec3(config.locations.helicopterStorage.coords.xyz)
+    heliZone = lib.zones.box({
+        coords = coords,
+        size = vec3(4, 4, 4),
+        rotation = 267.49,
+        debug = config.debugPoly,
+        onEnter = function()
+            if cache.vehicle then
+                lib.showTextUI(Lang:t('info.store_helicopters'))
+            else
+                lib.showTextUI(Lang:t('info.helicopters'))
             end
-            if MainExit then
-                MainExit:remove()
-                MainExit = nil
+        end,
+        onExit = function()
+            lib.hideTextUI()
+        end,
+        inside = function()
+            if IsControlJustReleased(0, 38) then
+                if cache.vehicle then
+                    DeleteVehicle(cache.vehicle)
+                else
+                    menuHeliGarage()
+                end
             end
         end
+    })
+end
+
+local function destroyHeliStorageZones()
+    if not heliZone then
+        return
+    end
+
+    heliZone:remove()
+    heliZone = nil
+end
+
+local function enterLocation()
+    DoScreenFadeOut(500)
+
+    while not IsScreenFadedOut() do
+        Wait(10)
+    end
+
+    SetEntityCoords(cache.ped, config.locations.inside.coords.x, config.locations.inside.coords.y, config.locations.inside.coords.z, false, false, false, false)
+    SetEntityHeading(cache.ped, config.locations.inside.coords.w)
+    DoScreenFadeIn(500)
+end
+
+local function exitLocation()
+    DoScreenFadeOut(500)
+
+    while not IsScreenFadedOut() do
+        Wait(10)
+    end
+
+    SetEntityCoords(cache.ped, config.locations.outside.coords.x, config.locations.outside.coords.y, config.locations.outside.coords.z, false, false, false, false)
+    SetEntityHeading(cache.ped, config.locations.outside.coords.w)
+    DoScreenFadeIn(500)
+end
+
+local function enterRoof()
+    DoScreenFadeOut(500)
+
+    while not IsScreenFadedOut() do
+        Wait(10)
+    end
+
+    SetEntityCoords(cache.ped, config.locations.roofExit.coords.x, config.locations.roofExit.coords.y, config.locations.roofExit.coords.z, false, false, false, false)
+    SetEntityHeading(cache.ped, config.locations.roofExit.coords.w)
+    DoScreenFadeIn(500)
+end
+
+local function exitRoof()
+    DoScreenFadeOut(500)
+
+    while not IsScreenFadedOut() do
+        Wait(10)
+    end
+
+    SetEntityCoords(cache.ped, config.locations.roofEntrance.coords.x, config.locations.roofEntrance.coords.y, config.locations.roofEntrance.coords.z, false, false, false, false)
+    SetEntityHeading(cache.ped, config.locations.roofEntrance.coords.w)
+    DoScreenFadeIn(500)
+end
+
+local function init()
+    if config.useBlips then
+        setLocationBlip()
+    end
+
+    registerMainEntrance()
+    registerMainExit()
+    registerEnterRoof()
+    registerExitRoof()
+
+    if QBX.PlayerData.job.name == 'reporter' then
+    registerVehicleStorage()
+    registerHeliStorage()
+    end
+end
+
+RegisterNetEvent('qbx_newsjob:client:takeOutVehicle', function(data)
+    if data.vehicle then
+        local coords = config.locations.vehicleStorage.coords
+        local veh = data.vehicle
+        takeOutVehicle(veh, coords)
+    elseif data.helicopter then
+        local coords = config.locations.helicopterStorage.coords
+        local veh = data.helicopter
+        takeOutVehicle(veh, coords)
     end
 end)
 
-RegisterNetEvent('qb-newsjob:client:TakeOutVehicle', function(data)
-    local vehicle = data.vehicle
-    TakeOutVehicle(vehicle)
+RegisterNetEvent('qbx_newsjob:client:target:enterLocation', function()
+    enterLocation()
 end)
 
-RegisterNetEvent('qb-newsjob:client:TakeOutHelicopters', function(data)
-    local vehicle = data.vehicle
-    TakeOutHelicopters(vehicle)
+RegisterNetEvent('qbx_newsjob:client:target:exitLocation', function()
+    exitLocation()
+end)
+
+RegisterNetEvent('qbx_newsjob:client:target:enterRoof', function()
+    enterRoof()
+end)
+
+RegisterNetEvent('qbx_newsjob:client:target:exitRoof', function()
+    exitRoof()
+end)
+
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function()
+    destroyVehicleStorageZones()
+    destroyHeliStorageZones()
+    init()
+end)
+
+AddEventHandler('onResourceStart', function(resourceName)
+    if GetCurrentResourceName() ~= resourceName then return end
+    if isLoggedIn then init() end
+end)
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if GetCurrentResourceName() ~= resourceName then return end
+    destroyVehicleStorageZones()
+    destroyHeliStorageZones()
+    destroyMainExitZones()
+    destroyEnterRoofZones()
+    destroyExitRoofZones()
 end)

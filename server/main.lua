@@ -1,22 +1,45 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
+local function checkReporterJob(source)
+    local Player = exports.qbx_core:GetPlayer(source)
+    return Player.PlayerData.job.name == 'reporter'
+end
 
-QBCore.Commands.Add("newscam", "Grab a news camera", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Cam:ToggleCam", source)
+lib.addCommand('newscam', {
+    help = Lang:t('info.newscam'),
+}, function(source)
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
     end
+    TriggerClientEvent('qbx_newsjob:client:toggleCam', source)
 end)
 
-QBCore.Commands.Add("newsmic", "Grab a news microphone", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Mic:ToggleMic", source)
+lib.addCommand('newsmic', {
+    help = Lang:t('info.newsmic'),
+}, function(source)
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
     end
+    TriggerClientEvent('qbx_newsjob:client:toggleMic', source)
 end)
 
-QBCore.Commands.Add("newsbmic", "Grab a Boom microphone", {}, false, function(source, _)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.job.name == "reporter" then
-        TriggerClientEvent("Mic:ToggleBMic", source)
+lib.addCommand('newsbmic', {
+    help = Lang:t('info.newsbmic'),
+}, function(source)
+    if not checkReporterJob(source) then
+        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+		return
     end
+    TriggerClientEvent('qbx_newsjob:client:toggleBMic', source)
+end)
+
+lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate)
+    local netId = SpawnVehicle(source, model, coords)
+    if not netId or netId == 0 then return end
+    local veh = NetworkGetEntityFromNetworkId(netId)
+    if not veh or veh == 0 then return end
+    SetEntityHeading(veh, coords.w)
+    SetVehicleNumberPlateText(veh, plate)
+    TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
+    return netId
 end)
