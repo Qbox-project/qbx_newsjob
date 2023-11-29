@@ -21,6 +21,7 @@ local Translations = {
         newsmic = 'Grab a news microphone',
         newsbmic = 'Grab a Boom microphone',
         news_plate = 'WZNW', --Should only be 4 characters long
+        blip_name = 'Weazel News',
     },
 }
 
