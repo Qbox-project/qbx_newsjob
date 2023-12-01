@@ -16,7 +16,7 @@ local function setLocationBlip()
     SetBlipAsShortRange(blip, true)
     SetBlipColour(blip, 1)
     BeginTextCommandSetBlipName('STRING')
-    AddTextComponentSubstringPlayerName(config.locations.mainEntrance.label)
+    AddTextComponentSubstringPlayerName(Lang:t('info.blip_name'))
     EndTextCommandSetBlipName(blip)
 end
 
