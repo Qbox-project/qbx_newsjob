@@ -136,6 +136,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				lib.requestAnimDict(camanimDict)
@@ -165,6 +166,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				if IsControlJustReleased(1, 244) then
@@ -243,6 +245,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then Wait (1000) return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				if IsControlJustReleased(1, 38) then
@@ -340,6 +343,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then Wait (1000) return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingBmic then
 				lib.requestAnimDict(bmicanimDict)
