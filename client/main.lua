@@ -433,6 +433,7 @@ local function init()
     registerEnterRoof()
     registerExitRoof()
 
+	if not isLoggedIn then return end
     if QBX.PlayerData.job.name == 'reporter' then
     registerVehicleStorage()
     registerHeliStorage()
