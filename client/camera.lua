@@ -28,6 +28,7 @@ local new_z
 local movcamera
 local newscamera
 
+local isLoggedIn = LocalPlayer.state.isLoggedIn
 
 --FUNCTIONS--
 local function HideHUDThisFrame()
