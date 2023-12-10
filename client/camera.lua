@@ -245,7 +245,7 @@ end)
 
 CreateThread(function()
 	while true do
-		if not isLoggedIn then Wait (1000) return end
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				if IsControlJustReleased(1, 38) then
