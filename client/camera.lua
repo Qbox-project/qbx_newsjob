@@ -344,7 +344,7 @@ end)
 
 CreateThread(function()
 	while true do
-		if not isLoggedIn then Wait (1000) return end
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingBmic then
 				lib.requestAnimDict(bmicanimDict)
