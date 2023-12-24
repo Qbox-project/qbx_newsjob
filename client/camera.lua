@@ -28,6 +28,7 @@ local new_z
 local movcamera
 local newscamera
 
+local isLoggedIn = LocalPlayer.state.isLoggedIn
 
 --FUNCTIONS--
 local function HideHUDThisFrame()
@@ -136,6 +137,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				lib.requestAnimDict(camanimDict)
@@ -165,6 +167,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				if IsControlJustReleased(1, 244) then
@@ -243,6 +246,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
 				if IsControlJustReleased(1, 38) then
@@ -340,6 +344,7 @@ end)
 
 CreateThread(function()
 	while true do
+		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingBmic then
 				lib.requestAnimDict(bmicanimDict)
