@@ -94,18 +94,6 @@ local function drawRct(x,y,width,height,r,g,b,a)
 	DrawRect(x + width/2, y + height/2, width, height, r, g, b, a)
 end
 
-local function Breaking(text)
-	SetTextColour(255, 255, 255, 255)
-	SetTextFont(8)
-	SetTextScale(1.2, 1.2)
-	SetTextWrap(0.0, 1.0)
-	SetTextCentre(false)
-	SetTextDropshadow(0, 0, 0, 0, 255)
-	SetTextEdge(1, 0, 0, 0, 205)
-	SetTextEntry('STRING')
-	AddTextComponentString(text)
-	DrawText(0.2, 0.85)
-end
 ---------------------------------------------------------------------------
 -- Toggling Cam --
 ---------------------------------------------------------------------------
@@ -255,9 +243,17 @@ CreateThread(function()
 					SetTimecycleModifierStrength(0.3)
 					local scaleform = lib.requestScaleformMovie('security_camera')
 					local scaleform2 = lib.requestScaleformMovie('breaking_news')
-
+					while not HasScaleformMovieLoaded(scaleform) do
+						Wait(10)
+					end
+					while not HasScaleformMovieLoaded(scaleform2) do
+						Wait(10)
+					end
 					local vehicle = GetVehiclePedIsIn(cache.ped)
 					local cam2 = CreateCam('DEFAULT_SCRIPTED_FLY_CAMERA', true)
+					local msg = Lang:t('info.title_breaking_news')
+					local bottom = Lang:t('info.bottom_breaking_news')
+					local title = Lang:t('info.breaking_news')
 					AttachCamToEntity(cam2, cache.ped, 0.0,0.0,1.0, true)
 					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(cache.ped))
 					SetCamFov(cam2, fov)
@@ -265,6 +261,25 @@ CreateThread(function()
 					PushScaleformMovieFunction(scaleform, 'SET_CAM_LOGO')
 					PushScaleformMovieFunction(scaleform2, 'breaking_news')
 					PopScaleformMovieFunctionVoid()
+
+					BeginScaleformMovieMethod(scaleform2, 'SET_TEXT')
+					PushScaleformMovieFunctionParameterString(msg)
+					PushScaleformMovieFunctionParameterString(bottom)
+					EndScaleformMovieMethod()
+
+					BeginScaleformMovieMethod(scaleform2, 'SET_SCROLL_TEXT')
+
+					PushScaleformMovieFunctionParameterInt(0) -- 0 = top, 1 = bottom
+					PushScaleformMovieFunctionParameterInt(0)
+
+					PushScaleformMovieFunctionParameterString(title)
+					EndScaleformMovieMethod()
+
+					BeginScaleformMovieMethod(scaleform2, 'DISPLAY_SCROLL_TEXT')
+					PushScaleformMovieFunctionParameterInt(0)
+					PushScaleformMovieFunctionParameterInt(0)
+					EndScaleformMovieMethod()
+
 					while newscamera and not IsEntityDead(cache.ped) and (GetVehiclePedIsIn(cache.ped) == vehicle) do
 						if IsControlJustPressed(1, 177) then
 							PlaySoundFrontend(-1, 'SELECT', 'HUD_FRONTEND_DEFAULT_SOUNDSET', false)
@@ -277,7 +292,6 @@ CreateThread(function()
 						HideHUDThisFrame()
 						DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255)
 						DrawScaleformMovie(scaleform2, 0.5, 0.63, 1.0, 1.0, 255, 255, 255, 255)
-						Breaking(Lang:t('info.breaking_news'))
 						local camHeading = GetGameplayCamRelativeHeading()
 						local camPitch = GetGameplayCamRelativePitch()
 						if camPitch < -70.0 then
