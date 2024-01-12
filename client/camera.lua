@@ -100,7 +100,7 @@ end
 
 RegisterNetEvent('qbx_newsjob:client:toggleCam', function()
     if not holdingCam then
-        lib.requestModel(camModel)
+        lib.requestModel(camModel, 5000)
         local plyCoords = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 0.0, -5.0)
         local camspawned = CreateObject(camModel, plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
         Wait(1000)
@@ -128,7 +128,7 @@ CreateThread(function()
 		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingCam then
-				lib.requestAnimDict(camanimDict)
+				lib.requestAnimDict(camanimDict, 5000)
 
 				if not IsEntityPlayingAnim(cache.ped, camanimDict, camanimName, 3) then
 					TaskPlayAnim(cache.ped, camanimDict, camanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
@@ -162,7 +162,7 @@ CreateThread(function()
 					movcamera = true
 					SetTimecycleModifier('default')
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = lib.requestScaleformMovie('security_camera')
+					local scaleform = lib.requestScaleformMovie('security_camera', 5000)
 					while not HasScaleformMovieLoaded(scaleform) do
 						Wait(10)
 					end
@@ -241,8 +241,8 @@ CreateThread(function()
 					newscamera = true
 					SetTimecycleModifier('default')
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = lib.requestScaleformMovie('security_camera')
-					local scaleform2 = lib.requestScaleformMovie('breaking_news')
+					local scaleform = lib.requestScaleformMovie('security_camera', 5000)
+					local scaleform2 = lib.requestScaleformMovie('breaking_news', 5000)
 					while not HasScaleformMovieLoaded(scaleform) do
 						Wait(10)
 					end
@@ -335,7 +335,7 @@ end)
 
 RegisterNetEvent('qbx_newsjob:client:toggleBMic', function()
     if not holdingBmic then
-        lib.requestModel(bmicModel)
+        lib.requestModel(bmicModel, 5000)
         local plyCoords = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 0.0, -5.0)
         local bmicspawned = CreateObject(bmicModel, plyCoords.x, plyCoords.y, plyCoords.z, true, true, false)
         Wait(1000)
@@ -361,7 +361,7 @@ CreateThread(function()
 		if not isLoggedIn then return end
 		if QBX.PlayerData.job.name == 'reporter' then
 			if holdingBmic then
-				lib.requestAnimDict(bmicanimDict)
+				lib.requestAnimDict(bmicanimDict, 5000)
 				if not IsEntityPlayingAnim(cache.ped, bmicanimDict, bmicanimName, 3) then
 					TaskPlayAnim(cache.ped, bmicanimDict, bmicanimName, 1.0, -1, -1, 50, 0, 0, 0, 0)
 				end
@@ -401,8 +401,8 @@ end)
 ---------------------------------------------------------------------------
 RegisterNetEvent('qbx_newsjob:client:toggleMic', function()
     if not holdingMic then
-        lib.requestModel(micModel)
-		lib.requestAnimDict(micanimDict)
+        lib.requestModel(micModel, 5000)
+	lib.requestAnimDict(micanimDict, 5000)
         local plyCoords = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 0.0, -5.0)
         local micspawned = CreateObject(micModel, plyCoords.x, plyCoords.y, plyCoords.z, 1, 1, 1)
         Wait(1000)
