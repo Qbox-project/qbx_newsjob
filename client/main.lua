@@ -40,7 +40,7 @@ local function takeOutVehicle(vehType, coords)
     SetVehicleFuelLevel(veh, 100.0)
     TaskWarpPedIntoVehicle(cache.ped, veh, -1)
     SetVehicleEngineOn(veh, true, true, false)
-    CurrentPlate = GetPlate(veh)
+    CurrentPlate = qbx.getVehiclePlate(veh)
 end
 
 local function menuVehicleGarage()
