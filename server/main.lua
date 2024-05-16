@@ -34,9 +34,8 @@ lib.addCommand('newsbmic', {
 end)
 
 lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model, coords, plate)
-    local netId = qbx.spawnVehicle(source, model, coords)
+    local netId, veh = qbx.spawnVehicle(source, model, coords)
     if not netId or netId == 0 then return end
-    local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 then return end
     SetEntityHeading(veh, coords.w)
     SetVehicleNumberPlateText(veh, plate)
