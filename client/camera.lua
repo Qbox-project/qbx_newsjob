@@ -250,7 +250,7 @@ CreateThread(function()
 					SetCamFov(cam2, fov)
 					RenderScriptCams(true, false, 0, true, false)
 
-					local cameraScale = qbx.newScaleform('SET_CAM_LOGO')
+					local cameraScale = qbx.newScaleform('security_camera')
 					cameraScale:Method('SET_CAM_LOGO')
 					cameraScale:Draw(true)
 
