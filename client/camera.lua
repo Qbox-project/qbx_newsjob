@@ -163,21 +163,18 @@ CreateThread(function()
 					movcamera = true
 					SetTimecycleModifier('default')
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = lib.requestScaleformMovie('security_camera', 5000)
-					if not scaleform then return end
-					while not HasScaleformMovieLoaded(scaleform) do
-						Wait(10)
-					end
 
-					local vehicle = cache.vehicle
 					local cam1 = CreateCam('DEFAULT_SCRIPTED_FLY_CAMERA', true)
-
 					AttachCamToEntity(cam1, cache.ped, 0.0,0.0,1.0, true)
 					SetCamRot(cam1, 2.0, 1.0, GetEntityHeading(cache.ped), 0)
 					SetCamFov(cam1, fov)
 					RenderScriptCams(true, false, 0, true, false)
-					PushScaleformMovieFunction(scaleform, 'security_camera')
-					PopScaleformMovieFunctionVoid()
+
+					local scaleform = qbx.newScaleform('security_camera')
+					scaleform:Method("security_camera")
+					scaleform:Draw(true)
+
+					local vehicle = cache.vehicle
 
 					while movcamera and not IsEntityDead(cache.ped) and cache.vehicle == vehicle do
 						if IsControlJustPressed(0, 177) then
@@ -191,7 +188,6 @@ CreateThread(function()
 						HandleZoom(cam1)
 						HideHUDThisFrame()
 						drawRct(UI.x + 0.0, 	UI.y + 0.0, 1.0,0.15,0,0,0,255) -- Top Bar
-						DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255, 0)
 						drawRct(UI.x + 0.0, 	UI.y + 0.85, 1.0,0.16,0,0,0,255) -- Bottom Bar
 						local camHeading = GetGameplayCamRelativeHeading()
 						local camPitch = GetGameplayCamRelativePitch()
@@ -215,7 +211,7 @@ CreateThread(function()
 					ClearTimecycleModifier()
 					fov = (fov_max+fov_min)*0.5
 					RenderScriptCams(false, false, 0, true, false)
-					SetScaleformMovieAsNoLongerNeeded(scaleform)
+					scaleform:Dispose()
 					DestroyCam(cam1, false)
 					SetNightvision(false)
 					SetSeethrough(false)
@@ -243,15 +239,7 @@ CreateThread(function()
 					newscamera = true
 					SetTimecycleModifier('default')
 					SetTimecycleModifierStrength(0.3)
-					local scaleform = lib.requestScaleformMovie('security_camera', 5000)
-					local scaleform2 = lib.requestScaleformMovie('breaking_news', 5000)
-					if not scaleform or not scaleform2 then return end
-					while not HasScaleformMovieLoaded(scaleform) do
-						Wait(10)
-					end
-					while not HasScaleformMovieLoaded(scaleform2) do
-						Wait(10)
-					end
+
 					local vehicle = cache.vehicle
 					local cam2 = CreateCam('DEFAULT_SCRIPTED_FLY_CAMERA', true)
 					local msg = Lang:t('info.title_breaking_news')
@@ -261,22 +249,17 @@ CreateThread(function()
 					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(cache.ped), 0)
 					SetCamFov(cam2, fov)
 					RenderScriptCams(true, false, 0, true, false)
-					PushScaleformMovieFunction(scaleform, 'SET_CAM_LOGO')
-					PushScaleformMovieFunction(scaleform2, 'breaking_news')
-					PopScaleformMovieFunctionVoid()
-					BeginScaleformMovieMethod(scaleform2, 'SET_TEXT')
-					PushScaleformMovieFunctionParameterString(msg)
-					PushScaleformMovieFunctionParameterString(bottom)
-					EndScaleformMovieMethod()
-					BeginScaleformMovieMethod(scaleform2, 'SET_SCROLL_TEXT')
-					PushScaleformMovieFunctionParameterInt(0) -- 0 = top, 1 = bottom
-					PushScaleformMovieFunctionParameterInt(0)
-					PushScaleformMovieFunctionParameterString(title)
-					EndScaleformMovieMethod()
-					BeginScaleformMovieMethod(scaleform2, 'DISPLAY_SCROLL_TEXT')
-					PushScaleformMovieFunctionParameterInt(0)
-					PushScaleformMovieFunctionParameterInt(0)
-					EndScaleformMovieMethod()
+
+					local cameraScale = qbx.newScaleform('SET_CAM_LOGO')
+					cameraScale:Method('SET_CAM_LOGO')
+					cameraScale:Draw(true)
+
+					local breakingScale = qbx.newScaleform('breaking_news')
+					breakingScale:Method('breaking_news')
+					breakingScale:MethodArgs('SET_TEXT', {msg, bottom})
+					breakingScale:MethodArgs('SET_SCROLL_TEXT', {0, 0, title})
+					breakingScale:MethodArgs('DISPLAY_SCROLL_TEXT', {0, 0})
+					breakingScale:Draw(true)
 
 					while newscamera and not IsEntityDead(cache.ped) and (cache.vehicle == vehicle) do
 						if IsControlJustPressed(1, 177) then
@@ -288,8 +271,7 @@ CreateThread(function()
 						CheckInputRotation(cam2, zoomvalue)
 						HandleZoom(cam2)
 						HideHUDThisFrame()
-						DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255, 0)
-						DrawScaleformMovie(scaleform2, 0.5, 0.63, 1.0, 1.0, 255, 255, 255, 255, 0)
+
 						local camHeading = GetGameplayCamRelativeHeading()
 						local camPitch = GetGameplayCamRelativePitch()
 						if camPitch < -70.0 then
@@ -311,8 +293,11 @@ CreateThread(function()
 					newscamera = false
 					ClearTimecycleModifier()
 					fov = (fov_max+fov_min)*0.5
+
+					cameraScale:Dispose()
+					breakingScale:Dispose()
+
 					RenderScriptCams(false, false, 0, true, false)
-					SetScaleformMovieAsNoLongerNeeded(scaleform)
 					DestroyCam(cam2, false)
 					SetNightvision(false)
 					SetSeethrough(false)
