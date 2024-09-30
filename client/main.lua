@@ -21,7 +21,7 @@ local function setLocationBlip()
 end
 
 local function takeOutVehicle(vehType, coords)
-    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehType, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
+    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehType, coords,locale('info.news_plate')..tostring(math.random(1000, 9999)), true)
     local timeout = 100
     while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
         Wait(10)
@@ -59,7 +59,7 @@ local function menuVehicleGarage()
 
     lib.registerContext({
         id = 'weazel_garage_context_menu',
-        title = Lang:t('info.weazel_news_vehicles'),
+        title =locale('info.weazel_news_vehicles'),
         options = optionsMenu
     })
 
@@ -82,7 +82,7 @@ local function menuHeliGarage()
 
     lib.registerContext({
         id = 'weazel_heli_context_menu',
-        title = Lang:t('info.weazel_news_helicopters'),
+        title =locale('info.weazel_news_helicopters'),
         options = optionsMenu
     })
 
@@ -104,7 +104,7 @@ local function registerMainEntrance()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:enterLocation',
-                    label = Lang:t("info.enter"),
+                    label =locale("info.enter"),
                     distance = 1
                 },
             },
@@ -146,7 +146,7 @@ local function registerMainExit()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:exitLocation',
-                    label = Lang:t("info.go_outside"),
+                    label =locale("info.go_outside"),
                     distance = 1
                 },
             },
@@ -202,7 +202,7 @@ local function registerEnterRoof()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:enterRoof',
-                    label = Lang:t("info.roof_enter"),
+                    label =locale("info.roof_enter"),
                     distance = 1
                 },
             },
@@ -258,7 +258,7 @@ local function registerExitRoof()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:exitRoof',
-                    label = Lang:t("info.roof_exit"),
+                    label =locale("info.roof_exit"),
                     distance = 1
                 },
             },
