@@ -112,7 +112,7 @@ RegisterNetEvent('qbx_newsjob:client:toggleCam', function()
         lib.playAnim(cache.ped, camanimDict, camanimName, 1.0, -1, -1, 50, 0, false, false, false)
         cam_net = netid
         holdingCam = true
-		lib.showTextUI(Lang:t('info.weazle_overlay'))
+		lib.showTextUI(locale('info.weazle_overlay'))
     else
 		lib.hideTextUI()
         ClearPedSecondaryTask(cache.ped)
