@@ -254,9 +254,9 @@ CreateThread(function()
 					end
 					local vehicle = cache.vehicle
 					local cam2 = CreateCam('DEFAULT_SCRIPTED_FLY_CAMERA', true)
-					local msg =locale('info.title_breaking_news')
-					local bottom =locale('info.bottom_breaking_news')
-					local title =locale('info.breaking_news')
+					local msg = locale('info.title_breaking_news')
+					local bottom = locale('info.bottom_breaking_news')
+					local title = locale('info.breaking_news')
 					AttachCamToEntity(cam2, cache.ped, 0.0,0.0,1.0, true)
 					SetCamRot(cam2, 2.0,1.0,GetEntityHeading(cache.ped), 0)
 					SetCamFov(cam2, fov)
