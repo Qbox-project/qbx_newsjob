@@ -16,7 +16,7 @@ local function setLocationBlip()
     SetBlipAsShortRange(blip, true)
     SetBlipColour(blip, 1)
     BeginTextCommandSetBlipName('STRING')
-    AddTextComponentSubstringPlayerName(Lang:t('info.blip_name'))
+    AddTextComponentSubstringPlayerName(locale('info.blip_name'))
     EndTextCommandSetBlipName(blip)
 end
 
@@ -29,7 +29,7 @@ local function takeOutVehicle(vehType, coords)
     end
     local veh = NetToVeh(netId)
     if veh == 0 then
-        exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
+        exports.qbx_core:Notify(locale('error.cant_spawn_vehicle'), 'error')
         return
     end
     local vehClass = GetVehicleClass(veh)
@@ -116,7 +116,7 @@ local function registerMainEntrance()
             size = vec3(1.0, 5.85, 3),
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.enter"))
+                lib.showTextUI(locale("info.enter"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -158,7 +158,7 @@ local function registerMainExit()
             rotation = 340.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.go_outside"))
+                lib.showTextUI(locale("info.go_outside"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -214,7 +214,7 @@ local function registerEnterRoof()
             rotation = 340.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.roof_enter"))
+                lib.showTextUI(locale("info.roof_enter"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -270,7 +270,7 @@ local function registerExitRoof()
             rotation = 0.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.roof_exit"))
+                lib.showTextUI(locale("info.roof_exit"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -308,9 +308,9 @@ local function registerVehicleStorage()
         debug = config.debugPoly,
         onEnter = function()
             if cache.vehicle then
-                lib.showTextUI(Lang:t('info.store_vehicle'))
+                lib.showTextUI(locale('info.store_vehicle'))
             else
-                lib.showTextUI(Lang:t('info.vehicles'))
+                lib.showTextUI(locale('info.vehicles'))
             end
         end,
         onExit = function()
@@ -346,9 +346,9 @@ local function registerHeliStorage()
         debug = config.debugPoly,
         onEnter = function()
             if cache.vehicle then
-                lib.showTextUI(Lang:t('info.store_helicopters'))
+                lib.showTextUI(locale('info.store_helicopters'))
             else
-                lib.showTextUI(Lang:t('info.helicopters'))
+                lib.showTextUI(locale('info.helicopters'))
             end
         end,
         onExit = function()

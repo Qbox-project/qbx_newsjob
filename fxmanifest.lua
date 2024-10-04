@@ -8,7 +8,6 @@ version '1.0.1'
 shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/lib.lua',
-   
 }
 
 client_scripts {
@@ -22,7 +21,8 @@ server_script {
 }
 
 files {
-    'config/client.lua',
+    'locales/*.json',
+    'config/client.lua',    
 }
 
 lua54 'yes'
