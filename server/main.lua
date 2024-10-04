@@ -4,30 +4,30 @@ local function checkReporterJob(source)
 end
 
 lib.addCommand('newscam', {
-    help = Lang:t('info.newscam'),
+    help = locale('info.newscam'),
 }, function(source)
     if not checkReporterJob(source) then
-        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+        TriggerClientEvent('ox_lib:notify', source, { description = locale('error.no_access'), type = 'error' })
 		return
     end
     TriggerClientEvent('qbx_newsjob:client:toggleCam', source)
 end)
 
 lib.addCommand('newsmic', {
-    help = Lang:t('info.newsmic'),
+    help = locale('info.newsmic'),
 }, function(source)
     if not checkReporterJob(source) then
-        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+        TriggerClientEvent('ox_lib:notify', source, { description = locale('error.no_access'), type = 'error' })
 		return
     end
     TriggerClientEvent('qbx_newsjob:client:toggleMic', source)
 end)
 
 lib.addCommand('newsbmic', {
-    help = Lang:t('info.newsbmic'),
+    help = locale('info.newsbmic'),
 }, function(source)
     if not checkReporterJob(source) then
-        TriggerClientEvent('ox_lib:notify', source, { description = Lang:t('error.no_access'), type = 'error' })
+        TriggerClientEvent('ox_lib:notify', source, { description = locale('error.no_access'), type = 'error' })
 		return
     end
     TriggerClientEvent('qbx_newsjob:client:toggleBMic', source)

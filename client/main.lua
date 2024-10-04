@@ -16,12 +16,12 @@ local function setLocationBlip()
     SetBlipAsShortRange(blip, true)
     SetBlipColour(blip, 1)
     BeginTextCommandSetBlipName('STRING')
-    AddTextComponentSubstringPlayerName(Lang:t('info.blip_name'))
+    AddTextComponentSubstringPlayerName(locale('info.blip_name'))
     EndTextCommandSetBlipName(blip)
 end
 
 local function takeOutVehicle(vehType, coords)
-    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehType, coords, Lang:t('info.news_plate')..tostring(math.random(1000, 9999)), true)
+    local netId = lib.callback.await('qbx_newsjob:server:spawnVehicle', false, vehType, coords, locale('info.news_plate')..tostring(math.random(1000, 9999)), true)
     local timeout = 100
     while not NetworkDoesEntityExistWithNetworkId(netId) and timeout > 0 do
         Wait(10)
@@ -29,7 +29,7 @@ local function takeOutVehicle(vehType, coords)
     end
     local veh = NetToVeh(netId)
     if veh == 0 then
-        exports.qbx_core:Notify(Lang:t('error.cant_spawn_vehicle'), 'error')
+        exports.qbx_core:Notify(locale('error.cant_spawn_vehicle'), 'error')
         return
     end
     local vehClass = GetVehicleClass(veh)
@@ -59,7 +59,7 @@ local function menuVehicleGarage()
 
     lib.registerContext({
         id = 'weazel_garage_context_menu',
-        title = Lang:t('info.weazel_news_vehicles'),
+        title = locale('info.weazel_news_vehicles'),
         options = optionsMenu
     })
 
@@ -82,7 +82,7 @@ local function menuHeliGarage()
 
     lib.registerContext({
         id = 'weazel_heli_context_menu',
-        title = Lang:t('info.weazel_news_helicopters'),
+        title = locale('info.weazel_news_helicopters'),
         options = optionsMenu
     })
 
@@ -104,7 +104,7 @@ local function registerMainEntrance()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:enterLocation',
-                    label = Lang:t("info.enter"),
+                    label = locale("info.enter"),
                     distance = 1
                 },
             },
@@ -116,7 +116,7 @@ local function registerMainEntrance()
             size = vec3(1.0, 5.85, 3),
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.enter"))
+                lib.showTextUI(locale("info.enter"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -146,7 +146,7 @@ local function registerMainExit()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:exitLocation',
-                    label = Lang:t("info.go_outside"),
+                    label = locale("info.go_outside"),
                     distance = 1
                 },
             },
@@ -158,7 +158,7 @@ local function registerMainExit()
             rotation = 340.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.go_outside"))
+                lib.showTextUI(locale("info.go_outside"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -202,7 +202,7 @@ local function registerEnterRoof()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:enterRoof',
-                    label = Lang:t("info.roof_enter"),
+                    label = locale("info.roof_enter"),
                     distance = 1
                 },
             },
@@ -214,7 +214,7 @@ local function registerEnterRoof()
             rotation = 340.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.roof_enter"))
+                lib.showTextUI(locale("info.roof_enter"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -258,7 +258,7 @@ local function registerExitRoof()
                     icon = 'fa-solid fa-house',
                     type = 'client',
                     event = 'qbx_newsjob:client:target:exitRoof',
-                    label = Lang:t("info.roof_exit"),
+                    label = locale("info.roof_exit"),
                     distance = 1
                 },
             },
@@ -270,7 +270,7 @@ local function registerExitRoof()
             rotation = 0.0,
             debug = config.debugPoly,
             onEnter = function()
-                lib.showTextUI(Lang:t("info.roof_exit"))
+                lib.showTextUI(locale("info.roof_exit"))
             end,
             onExit = function()
                 lib.hideTextUI()
@@ -308,9 +308,9 @@ local function registerVehicleStorage()
         debug = config.debugPoly,
         onEnter = function()
             if cache.vehicle then
-                lib.showTextUI(Lang:t('info.store_vehicle'))
+                lib.showTextUI(locale('info.store_vehicle'))
             else
-                lib.showTextUI(Lang:t('info.vehicles'))
+                lib.showTextUI(locale('info.vehicles'))
             end
         end,
         onExit = function()
@@ -346,9 +346,9 @@ local function registerHeliStorage()
         debug = config.debugPoly,
         onEnter = function()
             if cache.vehicle then
-                lib.showTextUI(Lang:t('info.store_helicopters'))
+                lib.showTextUI(locale('info.store_helicopters'))
             else
-                lib.showTextUI(Lang:t('info.helicopters'))
+                lib.showTextUI(locale('info.helicopters'))
             end
         end,
         onExit = function()
