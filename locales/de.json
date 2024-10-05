@@ -1,0 +1,28 @@
+{
+    "error": {
+        "cant_spawn_vehicle": "Beim Spawnen des Fahrzeugs ist etwas schiefgelaufen",
+        "no_access": "Du hast keinen Zugriff auf diesen Befehl."
+    },
+    "info": {
+        "weazle_overlay": "Weazel Overlay: [E]  \nFilm Overlay: [M]",
+        "weazel_news_vehicles": "Weazel News Fahrzeuge",
+        "close_menu": "⬅ Menü schließen",
+        "weazel_news_helicopters": "Weazel News Hubschrauber",
+        "store_vehicle": "[E] - Fahrzeug einlagern",
+        "vehicles": "[E] - Fahrzeuge",
+        "store_helicopters": "[E] - Hubschrauber einlagern",
+        "helicopters": "[E] - Hubschrauber",
+        "enter": "[E] - Betreten",
+        "go_outside": "[E] - Nach draußen gehen",
+        "roof_enter": "[E] - Dach betreten",
+        "roof_exit": "[E] - Dach verlassen",
+        "breaking_news": "EILMELDUNG",
+        "title_breaking_news": "Weazel Today - Exklusive Eilmeldung",
+        "bottom_breaking_news": "Wir bringen Ihnen die AKTUELLSTEN NACHRICHTEN live, während sie passieren",
+        "newscam": "Nehmen Sie eine Nachrichtenkamera",
+        "newsmic": "Nehmen Sie ein Nachrichtenmikrofon",
+        "newsbmic": "Nehmen Sie ein Boom-Mikrofon",
+        "news_plate": "WZNW",
+        "blip_name": "Weazel News"
+    }
+}
