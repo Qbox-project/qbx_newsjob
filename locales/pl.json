@@ -1,0 +1,28 @@
+{
+    "error": {
+        "cant_spawn_vehicle": "Coś poszło nie tak podczas tworzenia pojazdu",
+        "no_access": "Nie masz dostępu do tej komendy."
+    },
+    "info": {
+        "weazle_overlay": "Nakładka Weazel: [E]  \nNakładka filmowa: [M]",
+        "weazel_news_vehicles": "Pojazdy Weazel News",
+        "close_menu": "⬅ Zamknij menu",
+        "weazel_news_helicopters": "Helikoptery Weazel News",
+        "store_vehicle": "[E] - Zaparkuj pojazd",
+        "vehicles": "[E] - Pojazdy",
+        "store_helicopters": "[E] - Zaparkuj helikoptery",
+        "helicopters": "[E] - Helikoptery",
+        "enter": "[E] - Wejdź",
+        "go_outside": "[E] - Wyjdź na zewnątrz",
+        "roof_enter": "[E] - Wejdź na dach",
+        "roof_exit": "[E] - Zejdź z dachu",
+        "breaking_news": "NAJNOWSZE WIADOMOŚCI",
+        "title_breaking_news": "Weazel Today - Ekskluzywne Najnowsze Wiadomości",
+        "bottom_breaking_news": "Przynosimy NAJNOWSZE WIADOMOŚCI na żywo, jak tylko się wydarzą",
+        "newscam": "Weź kamerę newsową",
+        "newsmic": "Weź mikrofon newsowy",
+        "newsbmic": "Weź mikrofon boom",
+        "news_plate": "WZNW",
+        "blip_name": "Weazel News"
+    }
+}
