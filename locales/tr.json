@@ -1,0 +1,28 @@
+{
+  "error": {
+    "cant_spawn_vehicle": "Aracı oluştururken bir hata oluştu",
+    "no_access": "Bu komutu kullanmaya yetkin yok."
+  },
+  "info": {
+    "weazle_overlay": "Weazel Overlay: [E]  \nFilm Overlay: [M]",
+    "weazel_news_vehicles": "Weazel News Araçları",
+    "close_menu": "⬅ Menüyü Kapat",
+    "weazel_news_helicopters": "Weazel News Helikopterleri",
+    "store_vehicle": "[E] - Aracı Depola",
+    "vehicles": "[E] - Araçlar",
+    "store_helicopters": "[E] - Helikopterleri Depola",
+    "helicopters": "[E] - Helikopterler",
+    "enter": "[E] - Gir",
+    "go_outside": "[E] - Dışarı Çık",
+    "roof_enter": "[E] - Çatıya Gir",
+    "roof_exit": "[E] - Çatıdan Çık",
+    "breaking_news": "SON DAKİKA HABERLERİ",
+    "title_breaking_news": "Weazel Today - Özel Son Dakika Haberleri",
+    "bottom_breaking_news": "En son haberleri canlı olarak size getiriyoruz",
+    "newscam": "Bir haber kamerası kapın",
+    "newsmic": "Bir haber mikrofonu kapın",
+    "newsbmic": "Bir Boom mikrofonu kapın",
+    "news_plate": "WZNW",
+    "blip_name": "Weazel News"
+  }
+}
