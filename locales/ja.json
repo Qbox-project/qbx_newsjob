@@ -1,0 +1,28 @@
+{
+    "error": {
+        "cant_spawn_vehicle": "車両のスポーンに問題が発生しました",
+        "no_access": "このコマンドにアクセスする権限がありません。"
+    },
+    "info": {
+        "weazle_overlay": "ウィーゼルオーバーレイ：[E]  \nフィルムオーバーレイ：[M]",
+        "weazel_news_vehicles": "ウィーゼルニュース車両",
+        "close_menu": "⬅ メニューを閉じる",
+        "weazel_news_helicopters": "ウィーゼルニュースヘリコプター",
+        "store_vehicle": "[E] - 車両を格納",
+        "vehicles": "[E] - 車両",
+        "store_helicopters": "[E] - ヘリコプターを格納",
+        "helicopters": "[E] - ヘリコプター",
+        "enter": "[E] - 入る",
+        "go_outside": "[E] - 外に出る",
+        "roof_enter": "[E] - 屋上に入る",
+        "roof_exit": "[E] - 屋上から出る",
+        "breaking_news": "速報",
+        "title_breaking_news": "ウィーゼル・トゥデイ - 速報独占",
+        "bottom_breaking_news": "最新ニュースをライブでお届けします",
+        "newscam": "ニュースカメラを持つ",
+        "newsmic": "ニュースマイクを持つ",
+        "newsbmic": "ブームマイクを持つ",
+        "news_plate": "WZNW",
+        "blip_name": "ウィーゼルニュース"
+    }
+}
