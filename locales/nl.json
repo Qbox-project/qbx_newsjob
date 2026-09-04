@@ -1,0 +1,28 @@
+{
+    "error": {
+        "cant_spawn_vehicle": "Er is iets misgegaan bij het voortbrengen van het voertuig",
+        "no_access": "U heeft geen toegang tot deze opdracht."
+    },
+    "info": {
+        "weazle_overlay": "Weazel-overlay: [E]  \nFilm-overlay: [M]",
+        "weazel_news_vehicles": "Weazel Nieuwsvoertuigen",
+        "close_menu": "⬅ Sluit menu",
+        "weazel_news_helicopters": "Weazel News-helikopters",
+        "store_vehicle": "[E] - Parkeer het voertuig",
+        "vehicles": "[E] - Voertuigen",
+        "store_helicopters": "[E] - Bewaar de helikopters",
+        "helicopters": "[E] - Helikopters",
+        "enter": "[E] - Kom binnen",
+        "go_outside": "[E] - Ga naar buiten",
+        "roof_enter": "[E] - Ga het dak in",
+        "roof_exit": "[E] - Uitgang dak",
+        "breaking_news": "BREAKING NIEUWS",
+        "title_breaking_news": "Weazel Today - Exclusief Breaking News",
+        "bottom_breaking_news": "Wij brengen u het LAATSTE NIEUWS live terwijl het gebeurt",
+        "newscam": "Pak een nieuwscamera",
+        "newsmic": "Pak een nieuwsmicrofoon",
+        "newsbmic": "Pak een Boom-microfoon",
+        "news_plate": "WZNW",
+        "blip_name": "Weazel-nieuws"
+    }
+}
