@@ -375,6 +375,16 @@ local function destroyHeliStorageZones()
     heliZone = nil
 end
 
+local function refreshJobZones()
+    destroyVehicleStorageZones()
+    destroyHeliStorageZones()
+
+    if not isLoggedIn or QBX.PlayerData.job.name ~= 'reporter' then return end
+
+    registerVehicleStorage()
+    registerHeliStorage()
+end
+
 local function enterLocation()
     DoScreenFadeOut(500)
 
@@ -432,11 +442,7 @@ local function init()
     registerMainExit()
     registerEnterRoof()
     registerExitRoof()
-
-    if QBX.PlayerData.job.name == 'reporter' and isLoggedIn then
-    registerVehicleStorage()
-    registerHeliStorage()
-    end
+    refreshJobZones()
 end
 
 RegisterNetEvent('qbx_newsjob:client:takeOutVehicle', function(data)
@@ -467,15 +473,21 @@ RegisterNetEvent('qbx_newsjob:client:target:exitRoof', function()
     exitRoof()
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function()
-    destroyVehicleStorageZones()
-    destroyHeliStorageZones()
-    init()
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    isLoggedIn = true
+    refreshJobZones()
 end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    isLoggedIn = false
+    refreshJobZones()
+end)
+
+RegisterNetEvent('QBCore:Client:OnJobUpdate', refreshJobZones)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
-    if isLoggedIn then init() end
+    init()
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
