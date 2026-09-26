@@ -52,12 +52,21 @@ lib.callback.register('qbx_newsjob:server:spawnVehicle', function(source, model)
 
     if #(GetEntityCoords(GetPlayerPed(source)) - spawnCoords.xyz) > 10.0 then return end
 
-    vehiclesSpawning[source] = true
+    local request = {}
+    vehiclesSpawning[source] = request
     local plate = ('NEWS%s'):format(lib.string.random('1111'))
-    local netId, veh = qbx.spawnVehicle({ model = model, spawnSource = spawnCoords, props = { plate = plate } })
-    vehiclesSpawning[source] = nil
+    local success, netId, veh = pcall(qbx.spawnVehicle, { model = model, spawnSource = spawnCoords, props = { plate = plate } })
+    if vehiclesSpawning[source] == request then vehiclesSpawning[source] = nil end
+    if not success then
+        lib.print.error(netId)
+        return
+    end
     if not netId or netId == 0 then return end
     if not veh or veh == 0 then return end
+    if exports.qbx_core:GetPlayer(source) ~= player then
+        DeleteEntity(veh)
+        return
+    end
     SetEntityHeading(veh, spawnCoords.w)
     SetVehicleNumberPlateText(veh, plate)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
